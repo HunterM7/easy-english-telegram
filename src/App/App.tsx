@@ -1,23 +1,24 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { init } from '@telegram-apps/sdk'
 import { isTMA } from '@telegram-apps/bridge';
 import './App.css'
 
 export function App() {
-  const ref = useRef({})
+  const [initData, setInitData] = useState({})
 
   useEffect(() => {
     if (isTMA()) {
-      console.log('It\'s Telegram Mini Apps');
-      ref.current = init()
+      // Telegram Mini Apps environment
+      setInitData(init())
     } else {
-      ref.current = { test: 123 }
+      // Debug environment
+      setInitData({ debug: true })
     }
   }, [])
 
   return (
     <>
-      {JSON.stringify(ref.current)}
+      {JSON.stringify(initData)}
     </>
   )
 }
