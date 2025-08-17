@@ -1,11 +1,13 @@
 import { useLaunchParams } from '@telegram-apps/sdk-react';
+import './app.css';
 
 export function App() {
-  const launchParams = useLaunchParams();
+  const { tgWebAppData } = useLaunchParams();
+  const firstName = tgWebAppData?.user?.first_name;
 
   return (
-    <>
-      LaunchParams: {JSON.stringify(launchParams.tgWebAppData?.user)}
-    </>
+    <div className='app'>
+      Добро пожаловать{firstName ? <span>, {firstName}</span> : ''}!
+    </div>
   )
 }
