@@ -1,0 +1,27 @@
+.lessons-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.lessons-page__title {
+  text-align: center;
+}
+
+.lessons-page__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .lessons-page__title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .lessons-page__list {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}

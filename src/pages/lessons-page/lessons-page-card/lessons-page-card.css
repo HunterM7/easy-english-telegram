@@ -1,0 +1,28 @@
+.lessons-page-card {
+  background: #f0f0f0;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.lessons-page-card__name {
+  font-size: 1.3rem;
+  color: #2c5aa0;
+}
+
+
+.lessons-page-card__description {
+  margin-top: 10px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #555;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .lessons-page__card {
+    padding: 15px;
+  }
+}
+

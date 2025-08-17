@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { HomePage } from './pages/home-page/home-page.tsx'
 import { ErrorPage } from './pages/error-page/error-page.tsx';
 import { LessonsPage } from './pages/lessons-page/lessons-page.tsx';
+import { LessonPage } from './pages/lesson-page/lesson-page.tsx';
 import './index.css'
 
 if (!isTMA()) {
@@ -22,6 +23,11 @@ const router = createBrowserRouter([
   {
     path: 'lessons',
     element: <LessonsPage />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: 'lessons/:id',
+    element: <LessonPage />,
     errorElement: <ErrorPage />,
   }
 ]);
