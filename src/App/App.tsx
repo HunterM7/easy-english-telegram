@@ -7,6 +7,8 @@ export function App() {
   return (
     <>
       InitData: {initData}
+      <br />
+      <br />
       LaunchParams: {JSON.stringify(launchParams)}
     </>
   )
