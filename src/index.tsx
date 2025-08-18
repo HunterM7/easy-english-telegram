@@ -1,12 +1,12 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { isTMA } from '@telegram-apps/sdk-react';
-import { mockTelegramData } from './utils/mockTelegramData.ts';
+import { mockTelegramData } from '#src/utils/mockTelegramData.ts';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { HomePage } from './pages/home-page/home-page.tsx'
-import { ErrorPage } from './pages/error-page/error-page.tsx';
-import { LessonsPage } from './pages/lessons-page/lessons-page.tsx';
-import { LessonPage } from './pages/lesson-page/lesson-page.tsx';
+import { HomePage } from '#src/pages/home-page/home-page';
+import { ErrorPage } from '#src/pages/error-page/error-page.tsx';
+import { LessonsPage } from '#src/pages/lessons-page/lessons-page.tsx';
+import { LessonPage } from '#src/pages/lesson-page/lesson-page.tsx';
 import './index.scss'
 
 if (!isTMA()) {
