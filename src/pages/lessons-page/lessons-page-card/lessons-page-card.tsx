@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { classNames } from '../../../utils/classNames';
-import './lessons-page-card.css'
+import './lessons-page-card.scss'
 
 interface Props {
   id: number;

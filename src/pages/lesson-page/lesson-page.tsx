@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
-import './lesson-page.css';
+import './lesson-page.scss';
 
 export function LessonPage() {
   const { id } = useParams();

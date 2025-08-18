@@ -1,6 +1,6 @@
 import { useLaunchParams } from '@telegram-apps/sdk-react';
-import './home-page.css';
 import { Link } from 'react-router-dom';
+import './home-page.scss';
 
 export function HomePage() {
   const { tgWebAppData } = useLaunchParams();

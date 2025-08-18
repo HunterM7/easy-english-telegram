@@ -7,7 +7,7 @@ import { HomePage } from './pages/home-page/home-page.tsx'
 import { ErrorPage } from './pages/error-page/error-page.tsx';
 import { LessonsPage } from './pages/lessons-page/lessons-page.tsx';
 import { LessonPage } from './pages/lesson-page/lesson-page.tsx';
-import './index.css'
+import './index.scss'
 
 if (!isTMA()) {
   // Если окружение не Telegram Mini Apps, то имитируем его.

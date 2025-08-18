@@ -1,6 +1,6 @@
 import { mockLessons } from './utils/mockLessons';
 import { LessonsPageCard } from './lessons-page-card/lessons-page-card';
-import './lessons-page.css'
+import './lessons-page.scss'
 
 export function LessonsPage() {
 
