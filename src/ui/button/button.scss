@@ -1,0 +1,75 @@
+.ui-button {
+  padding: 4px 34px 6px;
+  border-radius: 100px;
+  font-size: 32px;
+  background-color: #fff;
+  cursor: pointer;
+  border-width: 1px;
+  border-style: solid;
+
+  &--purple {
+    color: #9552FF;
+    border-color: #9552FF;
+    
+    &:hover {
+      color: #733CCC;
+      border-color: #733CCC;
+    }
+
+    &:active {
+      color: #D592FF;
+      border-color: #D592FF;
+    }
+  }
+
+  &--green {
+    color: #74FFB1;
+    border-color: #74FFB1;
+
+    &:hover {
+      color: #3CD67F;
+      border-color: #3CD67F;
+    }
+
+    &:active {
+      color: #A5F0C6;
+      border-color: #A5F0C6;
+    }
+  }
+
+  &--orange {
+    color: #FFBA52;
+    border-color: #FFBA52;
+
+    &:hover {
+      color: #EFA12D;
+      border-color: #EFA12D;
+    }
+
+    &:active {
+      color: #FFCA79;
+      border-color: #FFCA79;
+    }
+  }
+
+  &--red {
+    color: #FF9092;
+    border-color: #FF9092;
+
+    &:hover {
+      color: #F36769;
+      border-color: #F36769;
+    }
+
+    &:active {
+      color: #FFACAD;
+      border-color: #FFACAD;
+    }
+  }
+
+  &:disabled {
+    cursor: default;
+    color: #C4C4C4;
+    border-color: #C4C4C4;
+  }
+}
