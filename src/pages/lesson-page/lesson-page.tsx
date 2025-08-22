@@ -32,7 +32,7 @@ export function LessonPage() {
     <div className='lesson-page'>
       <h1 className='lesson-page__title'>
         <Link to='/lessons' className='lesson-page__back-button'>Назад</Link>
-        {name}
+        <span className='lesson-page__subject-name'>{name}</span>
       </h1>
       <div className="lesson-page__task-name">{task.name}</div>
       <div className="lesson-page__task-result">
