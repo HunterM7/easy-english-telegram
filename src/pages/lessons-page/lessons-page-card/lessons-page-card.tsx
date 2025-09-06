@@ -3,7 +3,7 @@ import { classNames } from '#src/utils/classNames';
 import './lessons-page-card.scss'
 
 interface Props {
-  id: number;
+  id: string;
   name: string;
   description: string;
   className?: string | undefined;

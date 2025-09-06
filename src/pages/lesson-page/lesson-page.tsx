@@ -25,7 +25,7 @@ export function LessonPage() {
     setResult([...result, option]);
   }
 
-  const { name, tasks } = lesson(+id!);
+  const { name, tasks } = lesson(id);
   const task = tasks[0];
 
   return (
