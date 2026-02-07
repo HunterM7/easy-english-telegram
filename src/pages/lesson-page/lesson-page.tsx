@@ -33,23 +33,25 @@ export function LessonPage() {
   return (
     <div className='lesson-page'>
       <Header title={name} backTo='/lessons' />
-      <div className="lesson-page__task-name">{task.name}</div>
-      <div className="lesson-page__task-result">
-        {result.map(item => (
-          <Button
-            key={item} type={ButtonType.Purple} className="lesson-page__task-result-item"
-            onClick={() => onResultItemClick(item)}
-          >
-            {item}
-          </Button>
-        ))}
+      <div className="lesson-page__main">
+        <div className="lesson-page__task-name">{task.name}</div>
+        <div className="lesson-page__task-result">
+          {result.map(item => (
+            <Button
+              key={item} type={ButtonType.Purple} className="lesson-page__task-result-item"
+              onClick={() => onResultItemClick(item)}
+            >
+              {item}
+            </Button>
+          ))}
+        </div>
+        <Button
+          type={ButtonType.Red} disabled={result.length == 0} className="lesson-page__delete-button"
+          onClick={onDeleteLastWordButtonClick}
+        >
+          удалить последнее слово
+        </Button>
       </div>
-      <Button
-        type={ButtonType.Red} disabled={result.length == 0} className="lesson-page__delete-button"
-        onClick={onDeleteLastWordButtonClick}
-      >
-        удалить последнее слово
-      </Button>
       <div className="lesson-page__options">
         {task.options.map(option => (
           <Button
