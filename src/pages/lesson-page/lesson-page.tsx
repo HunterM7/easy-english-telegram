@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { lesson } from '#requests/lesson';
 import { Button, ButtonType } from '#src/ui/button/button';
+import { Header } from '#src/ui/header/header';
 import './lesson-page.scss';
 
 export function LessonPage() {
@@ -30,10 +31,7 @@ export function LessonPage() {
 
   return (
     <div className='lesson-page'>
-      <h1 className='lesson-page__title'>
-        <Link to='/lessons' className='lesson-page__back-button'>Назад</Link>
-        <span className='lesson-page__subject-name'>{name}</span>
-      </h1>
+      <Header title={name} backTo='/lessons' />
       <div className="lesson-page__task-name">{task.name}</div>
       <div className="lesson-page__task-result">
         {result.map(item => (

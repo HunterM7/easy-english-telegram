@@ -1,0 +1,23 @@
+.header {
+  width: 100%;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  background-color: #6D50A7;
+
+  &__back-button {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__title {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 28px;
+    letter-spacing: 0.45px;
+    flex: 1;
+  }
+}

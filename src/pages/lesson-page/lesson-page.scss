@@ -3,29 +3,6 @@
   flex-direction: column;
   align-items: center;
 
-  &__title {
-    align-self: stretch;
-    text-align: center;
-    position: sticky;
-    top: 0;
-    background-color: #242424;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  &__back-button {
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.2rem;
-  }
-
-  &__subject-name {
-    font-size: 24px;
-  }
-
   &__task-name {
     margin-top: 60px;
     font-size: 32px;
