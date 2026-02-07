@@ -4,6 +4,7 @@ import { lesson } from '#requests/lesson';
 import { Button, ButtonType } from '#src/ui/button/button';
 import { Header } from '#src/ui/header/header';
 import './lesson-page.scss';
+import { LessonPageFooter } from './lesson-page-footer/lesson-page-footer';
 
 export function LessonPage() {
   const { id } = useParams();
@@ -59,6 +60,7 @@ export function LessonPage() {
           </Button>
         ))}
       </div>
+      <LessonPageFooter progress={20} />
     </div>
   )
 }

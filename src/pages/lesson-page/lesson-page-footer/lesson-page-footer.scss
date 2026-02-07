@@ -1,0 +1,49 @@
+.lesson-page-footer {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 16px 24px;
+    background-color: #0E1621;
+    border: 1px solid #1E293B;
+    border-top: none;
+
+    &__button {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 2px solid #475569;
+        border-radius: 100%;
+    }
+
+    &__progress {
+        flex: 1;
+    }
+
+    &__progress-bar {
+        height: 10px;
+        border-radius: 10px;
+        background-color: #334155;
+    }
+
+    &__progress-bar-completed {
+        width: 0;
+        height: 10px;
+        border-radius: 10px;
+        background-color: #65768E;
+        transition: width 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    &__progress-text {
+        margin-top: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 16px;
+        letter-spacing: 1.2px;
+        text-align: center;
+        text-transform: uppercase;
+    }
+}
