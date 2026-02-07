@@ -1,76 +1,34 @@
 .ui-button {
-  min-width: 42px;
-  padding: 6px 10px 8px;
-  border-radius: 100px;
-  font-size: 16px;
-  background-color: #fff;
+  min-width: 80px;
+  padding: 16px;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 28px;
+  color: #F1F5F9;
+  background-color: #242F3D;
   cursor: pointer;
-  border-width: 1px;
-  border-style: solid;
+  border-radius: 12px;
+  border-bottom: 4px solid #0F172A;
 
-  &--purple {
-    color: #9552FF;
-    border-color: #9552FF;
-    
-    &:hover {
-      color: #733CCC;
-      border-color: #733CCC;
-    }
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-property: background-color, border-color, transform, color;
 
-    &:active {
-      color: #D592FF;
-      border-color: #D592FF;
-    }
+  &:hover {
+    background-color: #1e293b;
+    border-color: #0f172a;
   }
 
-  &--green {
-    color: #74FFB1;
-    border-color: #74FFB1;
-
-    &:hover {
-      color: #3CD67F;
-      border-color: #3CD67F;
-    }
-
-    &:active {
-      color: #A5F0C6;
-      border-color: #A5F0C6;
-    }
-  }
-
-  &--orange {
-    color: #FFBA52;
-    border-color: #FFBA52;
-
-    &:hover {
-      color: #EFA12D;
-      border-color: #EFA12D;
-    }
-
-    &:active {
-      color: #FFCA79;
-      border-color: #FFCA79;
-    }
-  }
-
-  &--red {
-    color: #FF9092;
-    border-color: #FF9092;
-
-    &:hover {
-      color: #F36769;
-      border-color: #F36769;
-    }
-
-    &:active {
-      color: #FFACAD;
-      border-color: #FFACAD;
-    }
+  &:active {
+    background-color: #1e293b;
+    border-color: #0f172a;
+    transform: scale(0.95);
   }
 
   &:disabled {
     cursor: default;
-    color: #C4C4C4;
-    border-color: #C4C4C4;
+    color: #475569;
+    background-color: #29323D;
+    border-color: #212838;
   }
 }
