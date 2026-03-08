@@ -1,6 +1,6 @@
 # Easy English — приложение для изучения английского в Telegram
 
-Мини-приложение в Telegram для изучения английского: темы, уроки, тренажёр, маскот (попугайчик), геймификация. Продуктовое описание — в [docs/PRD.md](docs/PRD.md).
+Мини-приложение в Telegram для изучения английского: темы, уроки, тренажёр, маскот (попугайчик), геймификация. Документация — в [docs/](docs/README.md); продуктовое описание — в [docs/product/PRD.md](docs/product/PRD.md).
 
 ## Структура репозитория
 
@@ -14,8 +14,8 @@ easy-english-telegram/
 ```
 
 - **frontend** — SPA (React), работает в Telegram WebView и в браузере (посадочная + авторизация через Telegram). Запуск: `npm run dev` из папки `frontend/`.
-- **backend** — REST API (авторизация по JWT, защищённые роуты). Контракт API: [docs/API.md](docs/API.md). Запуск: `npm run start:dev` из папки `backend/`.
-- **docs** — [PRD](docs/PRD.md), [контракт API](docs/API.md), [карта экранов и флоу](docs/design-flows.md), [реализация и чек-лист](docs/implementation.md).
+- **backend** — REST API (авторизация по JWT, защищённые роуты). Контракт API: [docs/server/api/README.md](docs/server/api/README.md). Запуск: `npm run start:dev` из папки `backend/`.
+- **docs** — [индекс](docs/README.md): [Product (PRD, флоу)](docs/product/README.md), [Client (экраны)](docs/client/README.md), [Server (API, реализация)](docs/server/README.md).
 
 ## Быстрый старт
 
@@ -37,4 +37,4 @@ easy-english-telegram/
    ```
    Откроется по адресу из вывода Vite (обычно http://localhost:5173).
 
-Переменные окружения задаются в `frontend/.env` и `backend/.env` (не коммитить секреты). См. [docs/implementation.md](docs/implementation.md).
+Переменные окружения задаются в `frontend/.env` и `backend/.env` (не коммитить секреты). См. [docs/server/implementation.md](docs/server/implementation.md).

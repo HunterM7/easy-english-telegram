@@ -4,4 +4,4 @@
 
 - **Запуск:** `npm run dev`
 - **Сборка:** `npm run build`
-- **Переменные:** `VITE_API_URL` — хост API (например, `http://localhost:3000`). Пути API с префиксом `/v1` — см. [../docs/API.md](../docs/API.md).
+- **Переменные:** `VITE_API_URL` — хост API (например, `http://localhost:3000`). Пути API с префиксом `/v1` — см. [docs/server/api/README.md](../docs/server/api/README.md).
