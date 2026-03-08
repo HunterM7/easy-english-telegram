@@ -1,69 +1,40 @@
-# React + TypeScript + Vite
+# Easy English — приложение для изучения английского в Telegram
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Мини-приложение в Telegram для изучения английского: темы, уроки, тренажёр, маскот (попугайчик), геймификация. Продуктовое описание — в [docs/PRD.md](docs/PRD.md).
 
-Currently, two official plugins are available:
+## Структура репозитория
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+easy-english-telegram/
+├── frontend/     # Клиент: React + TypeScript + Vite + SCSS, Telegram Mini App
+├── backend/      # Сервер: NestJS, PostgreSQL, REST API v1
+├── docs/         # Документация: PRD, API, дизайн-флоу, реализация
+├── package.json  # Скрипты для запуска фронта и бэка из корня
+└── README.md
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- **frontend** — SPA (React), работает в Telegram WebView и в браузере (посадочная + авторизация через Telegram). Запуск: `npm run dev` из папки `frontend/`.
+- **backend** — REST API (авторизация по JWT, защищённые роуты). Контракт API: [docs/API.md](docs/API.md). Запуск: `npm run start:dev` из папки `backend/`.
+- **docs** — [PRD](docs/PRD.md), [контракт API](docs/API.md), [карта экранов и флоу](docs/design-flows.md), [реализация и чек-лист](docs/implementation.md).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Быстрый старт
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. Установить зависимости фронта и бэка:
+   ```bash
+   npm run install:all
+   ```
+   или по отдельности: `cd frontend && npm install` и `cd backend && npm install`.
+
+2. Запустить бэкенд (из корня):
+   ```bash
+   npm run dev:backend
+   ```
+   По умолчанию: http://localhost:3000
+
+3. Запустить фронт (из корня):
+   ```bash
+   npm run dev:frontend
+   ```
+   Откроется по адресу из вывода Vite (обычно http://localhost:5173).
+
+Переменные окружения задаются в `frontend/.env` и `backend/.env` (не коммитить секреты). См. [docs/implementation.md](docs/implementation.md).
