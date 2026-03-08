@@ -1,4 +1,4 @@
-# Logs
+# Логи (не коммитим отладочный вывод и дампы ошибок)
 logs
 *.log
 npm-debug.log*
@@ -7,12 +7,35 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Зависимости и артефакты сборки (восстанавливаются через npm install / build)
 node_modules
 dist
 dist-ssr
+build
 *.local
 
-# Editor directories and files
+# ——— Безопасность: не коммитить секреты, ключи и конфиги с данными доступа ———
+# Файлы окружения: сюда попадают JWT_SECRET, TELEGRAM_BOT_TOKEN, DATABASE_URL, ключи API и т.п.
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.test
+# Исключение: .env.example коммитим — это шаблон с пустыми/плейсхолдер-значениями для документации.
+# При добавлении новых переменных окружения обновлять .env.example в frontend и backend (см. PRD и implementation.md).
+# Приватные ключи и сертификаты (SSL, подписи и т.д.)
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+# Локальные файлы БД (если поднимается SQLite рядом с проектом)
+*.db
+*.sqlite
+*.sqlite3
+
+# Файлы и каталоги редакторов и ОС (не нужны в репозитории)
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -22,3 +45,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Отчёты тестов и кэш (генерируются при запуске тестов и сборки)
+coverage
+.nyc_output
+.cache
+*.tsbuildinfo
