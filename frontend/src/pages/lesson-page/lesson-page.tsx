@@ -8,12 +8,11 @@ import { LessonPageFooter } from './lesson-page-footer/lesson-page-footer';
 
 export function LessonPage() {
   const { id } = useParams();
+  const [result, setResult] = useState<string[]>([]);
 
-  if (id == undefined) {
-    return;
+  if (id === undefined) {
+    return null;
   }
-
-  const [ result, setResult ] = useState<string[]>([]);
 
   const onResultItemClick = (item: string) => {
     setResult(result.filter(resultItem => resultItem != item));

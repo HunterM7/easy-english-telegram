@@ -1,14 +1,14 @@
-interface Task {
+export interface Task {
   id: string;
   name: string;
   answer: string;
   options: string[];
 }
 
-interface LessonMockData {
+export interface LessonMockData {
   id: string;
   name: string;
-  tasks: Task[]
+  tasks: Task[];
 }
 
 export const lessonMockData: LessonMockData = {

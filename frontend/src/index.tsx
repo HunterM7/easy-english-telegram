@@ -1,39 +1,65 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
 import { isTMA } from '@telegram-apps/sdk-react';
-import { mockTelegramData } from '#src/utils/mockTelegramData.ts';
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { mockTelegramData } from '#src/utils/mockTelegramData';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { AuthProvider } from '#src/contexts/AuthContext';
+import { ProtectedRoute } from '#src/components/ProtectedRoute';
+import { GuestRoute } from '#src/components/GuestRoute';
 import { HomePage } from '#src/pages/home-page/home-page';
-import { ErrorPage } from '#src/pages/error-page/error-page.tsx';
-import { LessonsPage } from '#src/pages/lessons-page/lessons-page.tsx';
-import { LessonPage } from '#src/pages/lesson-page/lesson-page.tsx';
-import './index.scss'
+import { ErrorPage } from '#src/pages/error-page/error-page';
+import { LessonsPage } from '#src/pages/lessons-page/lessons-page';
+import { LessonPage } from '#src/pages/lesson-page/lesson-page';
+import { LandingPage } from '#src/pages/landing-page/landing-page';
+import './index.scss';
 
 if (!isTMA()) {
-  // Если окружение не Telegram Mini Apps, то имитируем его.
-  mockTelegramData()
+  mockTelegramData();
 }
 
 const router = createBrowserRouter([
   {
-    path: "",
-    element: <HomePage />,
+    path: '/landing',
+    element: (
+      <GuestRoute>
+        <LandingPage />
+      </GuestRoute>
+    ),
     errorElement: <ErrorPage />,
   },
   {
-    path: 'lessons',
-    element: <LessonsPage />,
+    path: '/',
+    element: (
+      <ProtectedRoute>
+        <HomePage />
+      </ProtectedRoute>
+    ),
     errorElement: <ErrorPage />,
   },
   {
-    path: 'lessons/:id',
-    element: <LessonPage />,
+    path: '/lessons',
+    element: (
+      <ProtectedRoute>
+        <LessonsPage />
+      </ProtectedRoute>
+    ),
     errorElement: <ErrorPage />,
-  }
+  },
+  {
+    path: '/lessons/:id',
+    element: (
+      <ProtectedRoute>
+        <LessonPage />
+      </ProtectedRoute>
+    ),
+    errorElement: <ErrorPage />,
+  },
 ]);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router}/>
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>,
-)
+);
