@@ -1,20 +1,21 @@
 /**
- * @fileoverview Legacy Telegram Login Widget.
- *
- * Использует старый виджет (telegram.org) — без oauth.telegram.org,
- * без ошибки "origin required". Домен привязывается через /setdomain в BotFather.
+ * @fileoverview Telegram Login Widget по официальной документации.
  *
  * @see https://core.telegram.org/widgets/login
+ *
+ * Настройка: /setdomain в @BotFather для привязки домена.
+ * Callback data-onauth получает: id, first_name, last_name, username, photo_url, auth_date, hash.
  */
 
 import { useEffect, useRef } from 'react';
 import type { TelegramWidgetData } from '#src/services/auth';
 
 interface TelegramLoginWidgetProps {
-  /** Имя бота без @ (например: EasyEnglishBot) */
+  /** Bot Username без @ (из конфигуратора на core.telegram.org/widgets/login) */
   botName: string;
   onAuth: (data: TelegramWidgetData) => void;
   onError?: (error: string) => void;
+  /** Button Style: large | medium | small */
   buttonSize?: 'large' | 'medium' | 'small';
 }
 
@@ -58,8 +59,10 @@ export function TelegramLoginWidget({
     script.async = true;
     script.setAttribute('data-telegram-login', botName.trim());
     script.setAttribute('data-size', buttonSize);
-    script.setAttribute('data-onauth', `${callbackName}(user)`);
     script.setAttribute('data-request-access', 'write');
+    script.setAttribute('data-userpic', 'true');
+    script.setAttribute('data-lang', 'ru');
+    script.setAttribute('data-onauth', `${callbackName}(user)`);
     container.appendChild(script);
 
     return () => {

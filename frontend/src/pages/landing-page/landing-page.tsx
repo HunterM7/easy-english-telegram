@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '#src/hooks/useAuth';
 import { TelegramLoginWidget } from '#src/components/TelegramLoginWidget';
+import type { TelegramWidgetData } from '#src/services/auth';
 import './landing-page.scss';
 
 const BOT_NAME = import.meta.env.VITE_TELEGRAM_BOT_NAME || '';
@@ -13,7 +14,7 @@ export function LandingPage() {
   const navigate = useNavigate();
 
   const handleAuth = useCallback(
-    async (data: { id: number; first_name?: string; last_name?: string; username?: string; photo_url?: string; auth_date: number; hash: string }) => {
+    async (data: TelegramWidgetData) => {
       try {
         await loginWithWidget(data);
         navigate('/', { replace: true });
