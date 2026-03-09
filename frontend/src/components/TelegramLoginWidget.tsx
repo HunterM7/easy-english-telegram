@@ -11,10 +11,8 @@
  * @see https://core.telegram.org/widgets/login
  */
 
-import { useEffect, useRef } from 'react';
+import { LoginButton } from '@telegram-auth/react';
 import type { TelegramWidgetData } from '#src/services/auth';
-
-let widgetCounter = 0;
 
 interface TelegramLoginWidgetProps {
   /** Имя бота (без @), например 'EasyEnglishBot' */
@@ -36,64 +34,34 @@ interface TelegramLoginWidgetProps {
 /**
  * Компонент Telegram Login Widget.
  *
- * Динамически загружает скрипт виджета от Telegram и рендерит кнопку авторизации.
+ * Использует @telegram-auth/react для надёжной авторизации.
  * После успешной авторизации вызывает onAuth с данными пользователя.
- *
- * @example
- * ```tsx
- * <TelegramLoginWidget
- *   botName="EasyEnglishBot"
- *   onAuth={(data) => handleTelegramLogin(data)}
- *   buttonSize="large"
- * />
- * ```
  */
 export function TelegramLoginWidget({
   botName,
   onAuth,
   buttonSize = 'large',
   cornerRadius = 8,
-  requestAccess,
-  usePic = true,
   lang = 'ru',
 }: TelegramLoginWidgetProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const callbackNameRef = useRef<string>(`TelegramLoginWidget_${++widgetCounter}`);
-  const onAuthRef = useRef(onAuth);
-
-  useEffect(() => {
-    onAuthRef.current = onAuth;
-  }, [onAuth]);
-
-  useEffect(() => {
-    const callbackName = callbackNameRef.current;
-    (window as unknown as Record<string, unknown>)[callbackName] = (data: TelegramWidgetData) => {
-      onAuthRef.current(data);
-    };
-
-    const script = document.createElement('script');
-    script.src = 'https://telegram.org/js/telegram-widget.js?22';
-    script.async = true;
-    script.setAttribute('data-telegram-login', botName);
-    script.setAttribute('data-size', buttonSize);
-    script.setAttribute('data-radius', String(cornerRadius));
-    script.setAttribute('data-onauth', `${callbackName}(user)`);
-    script.setAttribute('data-userpic', String(usePic));
-    script.setAttribute('data-lang', lang);
-
-    if (requestAccess) {
-      script.setAttribute('data-request-access', requestAccess);
-    }
-
-    if (containerRef.current) {
-      containerRef.current.innerHTML = '';
-      containerRef.current.appendChild(script);
-    }
-
-    return () => {
-      delete (window as unknown as Record<string, unknown>)[callbackName];
-    };
-  }, [botName, buttonSize, cornerRadius, requestAccess, usePic, lang]);
-
-  return <div ref={containerRef} />;
+  return (
+    <LoginButton
+      botUsername={botName}
+      onAuthCallback={(data) => {
+        onAuth({
+          id: data.id,
+          first_name: data.first_name,
+          last_name: data.last_name,
+          username: data.username,
+          photo_url: data.photo_url,
+          auth_date: data.auth_date,
+          hash: data.hash,
+        });
+      }}
+      buttonSize={buttonSize}
+      cornerRadius={cornerRadius}
+      lang={lang}
+      showAvatar={true}
+    />
+  );
 }
