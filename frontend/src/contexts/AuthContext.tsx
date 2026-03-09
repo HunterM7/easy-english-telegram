@@ -16,7 +16,7 @@ import {
   useRef,
   type ReactNode,
 } from 'react';
-import { retrieveLaunchParams } from '@telegram-apps/sdk-react';
+import { retrieveRawInitData } from '@telegram-apps/sdk-react';
 import { authService, type TelegramWidgetData, type User } from '#src/services/auth';
 import { AuthContext, type AuthContextType } from './authContextValue';
 
@@ -50,8 +50,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
    */
   const login = useCallback(async () => {
     try {
-      const launchParams = retrieveLaunchParams();
-      const initData = launchParams.tgWebAppData?.toString();
+      const initData = retrieveRawInitData();
 
       if (!initData) {
         console.error('No initData available');
