@@ -1,51 +1,23 @@
 /**
- * @fileoverview Компонент Telegram Login Widget (новая версия).
+ * @fileoverview Компонент Telegram Login (новая библиотека).
  *
- * Использует новую Telegram Login library с поддержкой OIDC.
- * Документация: https://core.telegram.org/bots/telegram-login
+ * Использует Telegram Login library с callback flow.
+ * Документация: https://core.telegram.org/bots/telegram-login#using-the-telegram-login-library
  *
- * Требования:
- * - Добавить Allowed URLs в BotFather Mini App → Bot Settings → Web Login
+ * НЕ требует Client Secret — id_token возвращается напрямую в callback.
  */
 
-import { useEffect, useRef, useCallback } from 'react';
-
-interface TelegramUser {
-  id: number;
-  first_name?: string;
-  last_name?: string;
-  username?: string;
-  photo_url?: string;
-}
-
-interface TelegramAuthResult {
-  id_token?: string;
-  user?: TelegramUser;
-  error?: string;
-}
+import { useEffect, useRef, useCallback, useState } from 'react';
+import type { TelegramAuthUser, TelegramAuthResult } from '#src/types/telegram-login';
 
 interface TelegramLoginWidgetProps {
-  /** Client ID (Bot ID) из BotFather */
   clientId: string;
-  /** Колбэк после успешной авторизации */
-  onAuth: (user: TelegramUser, idToken: string) => void;
-  /** Колбэк при ошибке */
+  onAuth: (user: TelegramAuthUser, idToken: string) => void;
   onError?: (error: string) => void;
-  /** Размер кнопки */
   buttonSize?: 'large' | 'medium' | 'small';
 }
 
-declare global {
-  interface Window {
-    Telegram?: {
-      Login: {
-        init: (options: { client_id: number; request_access?: string[]; lang?: string }, callback: (result: TelegramAuthResult) => void) => void;
-        open: (callback?: (result: TelegramAuthResult) => void) => void;
-        auth: (options: { client_id: number; request_access?: string[]; lang?: string }, callback: (result: TelegramAuthResult) => void) => void;
-      };
-    };
-  }
-}
+const SCRIPT_ID = 'telegram-login-script';
 
 export function TelegramLoginWidget({
   clientId,
@@ -53,7 +25,7 @@ export function TelegramLoginWidget({
   onError,
   buttonSize = 'large',
 }: TelegramLoginWidgetProps) {
-  const scriptLoaded = useRef(false);
+  const [isReady, setIsReady] = useState(false);
   const onAuthRef = useRef(onAuth);
   const onErrorRef = useRef(onError);
 
@@ -62,7 +34,7 @@ export function TelegramLoginWidget({
     onErrorRef.current = onError;
   }, [onAuth, onError]);
 
-  const handleAuth = useCallback((result: TelegramAuthResult) => {
+  const handleResult = useCallback((result: TelegramAuthResult) => {
     console.log('Telegram auth result:', result);
     if (result.error) {
       console.error('Telegram auth error:', result.error);
@@ -75,54 +47,86 @@ export function TelegramLoginWidget({
   }, []);
 
   useEffect(() => {
-    if (scriptLoaded.current) return;
+    // Проверяем, загружен ли уже скрипт
+    if (document.getElementById(SCRIPT_ID)) {
+      if (window.Telegram?.Login) {
+        setIsReady(true);
+      }
+      return;
+    }
 
     const script = document.createElement('script');
+    script.id = SCRIPT_ID;
     script.src = 'https://telegram.org/js/telegram-widget.js?22';
     script.async = true;
+    
     script.onload = () => {
-      scriptLoaded.current = true;
-      if (window.Telegram?.Login) {
-        window.Telegram.Login.init(
-          {
-            client_id: Number(clientId),
-            request_access: ['write'],
-            lang: 'ru',
-          },
-          handleAuth
-        );
-      }
+      console.log('Telegram script loaded, Telegram.Login:', window.Telegram?.Login);
+      // Даём время на инициализацию
+      setTimeout(() => {
+        if (window.Telegram?.Login) {
+          setIsReady(true);
+        } else {
+          console.error('Telegram.Login not available after script load');
+        }
+      }, 100);
     };
+    
+    script.onerror = () => {
+      console.error('Failed to load Telegram script');
+    };
+
     document.head.appendChild(script);
+  }, []);
 
-    return () => {
-      // Не удаляем скрипт при размонтировании
-    };
-  }, [clientId, handleAuth]);
-
-  const handleClick = () => {
-    if (window.Telegram?.Login) {
-      window.Telegram.Login.open(handleAuth);
-    } else {
-      console.error('Telegram Login SDK not loaded');
+  const handleClick = useCallback(() => {
+    const numericClientId = Number(clientId);
+    
+    if (!numericClientId || isNaN(numericClientId)) {
+      console.error('Invalid client_id:', clientId);
+      onErrorRef.current?.('Invalid client_id');
+      return;
     }
-  };
+
+    if (window.Telegram?.Login) {
+      console.log('Calling Telegram.Login.auth with client_id:', numericClientId);
+      // Используем auth() вместо init() + open() для явной передачи параметров
+      window.Telegram.Login.auth(
+        {
+          client_id: numericClientId,
+          request_access: ['write'],
+          lang: 'ru',
+        },
+        handleResult
+      );
+    } else {
+      console.error('Telegram.Login not available');
+      onErrorRef.current?.('Telegram Login SDK not loaded');
+    }
+  }, [clientId, handleResult]);
+
+  const padding = buttonSize === 'large' ? '12px 24px' : buttonSize === 'medium' ? '10px 20px' : '8px 16px';
+  const fontSize = buttonSize === 'large' ? '16px' : buttonSize === 'medium' ? '14px' : '12px';
 
   return (
     <button
       onClick={handleClick}
+      disabled={!isReady}
       style={{
-        background: 'linear-gradient(135deg, #2AABEE 0%, #229ED9 100%)',
+        background: isReady 
+          ? 'linear-gradient(135deg, #2AABEE 0%, #229ED9 100%)'
+          : '#ccc',
         color: 'white',
         border: 'none',
         borderRadius: '8px',
-        cursor: 'pointer',
+        cursor: isReady ? 'pointer' : 'not-allowed',
         fontWeight: 500,
         display: 'flex',
         alignItems: 'center',
         gap: '8px',
-        padding: buttonSize === 'large' ? '12px 24px' : buttonSize === 'medium' ? '10px 20px' : '8px 16px',
-        fontSize: buttonSize === 'large' ? '16px' : buttonSize === 'medium' ? '14px' : '12px',
+        padding,
+        fontSize,
+        opacity: isReady ? 1 : 0.7,
       }}
     >
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -131,7 +135,7 @@ export function TelegramLoginWidget({
           fill="white"
         />
       </svg>
-      Войти через Telegram
+      {isReady ? 'Войти через Telegram' : 'Загрузка...'}
     </button>
   );
 }
