@@ -89,11 +89,11 @@ export function TelegramLoginWidget({
     }
 
     if (window.Telegram?.Login) {
-      console.log('Calling Telegram.Login.auth with client_id:', numericClientId);
-      // Используем auth() вместо init() + open() для явной передачи параметров
+      console.log('Calling Telegram.Login.auth with bot_id:', numericClientId);
+      // Скрипт ожидает bot_id, не client_id (документация устарела)
       window.Telegram.Login.auth(
         {
-          client_id: numericClientId,
+          bot_id: numericClientId,
           request_access: ['write'],
           lang: 'ru',
         },

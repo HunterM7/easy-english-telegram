@@ -19,7 +19,8 @@ export interface TelegramAuthResult {
 }
 
 export interface TelegramLoginInitOptions {
-  client_id: number;
+  /** Скрипт ожидает bot_id (документация указывает client_id, но это устарело) */
+  bot_id: number;
   request_access?: ('phone' | 'write')[];
   lang?: string;
   nonce?: string;
