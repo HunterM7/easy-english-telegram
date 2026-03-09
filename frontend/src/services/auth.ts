@@ -86,7 +86,7 @@ class AuthService {
    * @throws При ошибке валидации или сетевой ошибке
    */
   async login(initData: string): Promise<LoginResponse> {
-    const response = await apiClient.post<LoginResponse>('/auth/login', {
+    const response = await apiClient.post<LoginResponse>('auth/login', {
       initData,
     });
 
@@ -107,7 +107,7 @@ class AuthService {
    */
   async loginWithWidget(data: TelegramWidgetData): Promise<LoginResponse> {
     const response = await apiClient.post<LoginResponse>(
-      '/auth/telegram-widget',
+      'auth/telegram-widget',
       data,
     );
 
@@ -132,7 +132,7 @@ class AuthService {
     }
 
     try {
-      const response = await apiClient.post<AuthTokens>('/auth/refresh', {
+      const response = await apiClient.post<AuthTokens>('auth/refresh', {
         refreshToken,
       });
 
@@ -155,7 +155,7 @@ class AuthService {
 
     if (refreshToken) {
       try {
-        await apiClient.post('/auth/logout', { refreshToken });
+        await apiClient.post('auth/logout', { refreshToken });
       } catch {
         // Игнорируем ошибки — локальная очистка важнее
       }

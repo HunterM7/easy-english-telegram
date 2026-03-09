@@ -184,7 +184,7 @@ npm run dev:frontend  # http://localhost:5173
 
 | Переменная | Описание | Обязательно |
 |------------|----------|-------------|
-| `VITE_API_URL` | URL бэкенда | Нет (default: `http://localhost:3000/v1`) |
+| `VITE_API_URL` | URL бэкенда | Нет (default: `http://localhost:3000/v1/`) |
 | `VITE_TELEGRAM_BOT_NAME` | Имя бота (без @) | Для Telegram Login Widget |
 | `VITE_USE_REAL_AUTH` | `true` для реальной авторизации через виджет | Нет (default: `false`) |
 
