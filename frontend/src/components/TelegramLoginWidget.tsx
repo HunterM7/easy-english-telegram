@@ -1,24 +1,37 @@
 /**
  * @fileoverview Компонент Telegram Login (новая библиотека).
  *
- * Использует Telegram Login library с callback flow.
+ * Использует официальный скрипт: https://oauth.telegram.org/js/telegram-login.js
  * Документация: https://core.telegram.org/bots/telegram-login#using-the-telegram-login-library
  *
- * НЕ требует Client Secret — id_token возвращается напрямую в callback.
+ * Callback возвращает { id_token, user } или { error }.
  */
 
 import { useEffect, useRef, useCallback, useState } from 'react';
-import type { TelegramWidgetData } from '#src/services/auth';
+
+interface TelegramAuthUser {
+  id: number;
+  name?: string;
+  preferred_username?: string;
+  picture?: string;
+}
+
+interface TelegramAuthResult {
+  id_token?: string;
+  user?: TelegramAuthUser;
+  error?: string;
+}
 
 interface TelegramLoginWidgetProps {
   clientId: string;
-  /** Колбэк с данными от виджета (старый формат: id, first_name, hash, auth_date...) */
-  onAuth: (data: TelegramWidgetData) => void;
+  /** Колбэк с id_token для отправки на бэкенд */
+  onAuth: (idToken: string) => void;
   onError?: (error: string) => void;
   buttonSize?: 'large' | 'medium' | 'small';
 }
 
 const SCRIPT_ID = 'telegram-login-script';
+const SCRIPT_URL = 'https://oauth.telegram.org/js/telegram-login.js?3';
 
 export function TelegramLoginWidget({
   clientId,
@@ -35,20 +48,19 @@ export function TelegramLoginWidget({
     onErrorRef.current = onError;
   }, [onAuth, onError]);
 
-  const handleResult = useCallback((result: unknown) => {
+  const handleResult = useCallback((result: TelegramAuthResult) => {
     console.log('Telegram auth result:', result);
-    if (result === false || result === null || result === undefined) {
-      onErrorRef.current?.('Авторизация не завершена');
+    if (result.error) {
+      console.error('Telegram auth error:', result.error);
+      onErrorRef.current?.(result.error);
       return;
     }
-    const data = result as Record<string, unknown>;
-    if (data.id && data.hash && data.auth_date) {
-      onAuthRef.current(data as unknown as TelegramWidgetData);
+    if (result.id_token) {
+      onAuthRef.current(result.id_token);
     }
   }, []);
 
   useEffect(() => {
-    // Проверяем, загружен ли уже скрипт
     if (document.getElementById(SCRIPT_ID)) {
       if (window.Telegram?.Login) {
         setIsReady(true);
@@ -58,23 +70,18 @@ export function TelegramLoginWidget({
 
     const script = document.createElement('script');
     script.id = SCRIPT_ID;
-    script.src = 'https://telegram.org/js/telegram-widget.js?22';
+    script.src = SCRIPT_URL;
     script.async = true;
-    
+
     script.onload = () => {
-      console.log('Telegram script loaded, Telegram.Login:', window.Telegram?.Login);
-      // Даём время на инициализацию
+      console.log('Telegram Login script loaded');
       setTimeout(() => {
-        if (window.Telegram?.Login) {
-          setIsReady(true);
-        } else {
-          console.error('Telegram.Login not available after script load');
-        }
+        setIsReady(!!window.Telegram?.Login);
       }, 100);
     };
-    
+
     script.onerror = () => {
-      console.error('Failed to load Telegram script');
+      console.error('Failed to load Telegram Login script');
     };
 
     document.head.appendChild(script);
@@ -82,26 +89,22 @@ export function TelegramLoginWidget({
 
   const handleClick = useCallback(() => {
     const numericClientId = Number(clientId);
-    
+
     if (!numericClientId || isNaN(numericClientId)) {
-      console.error('Invalid client_id:', clientId);
       onErrorRef.current?.('Invalid client_id');
       return;
     }
 
     if (window.Telegram?.Login) {
-      console.log('Calling Telegram.Login.auth with bot_id:', numericClientId);
-      // Скрипт ожидает bot_id, не client_id (документация устарела)
       window.Telegram.Login.auth(
         {
-          bot_id: numericClientId,
+          client_id: numericClientId,
           request_access: ['write'],
           lang: 'ru',
         },
         handleResult
       );
     } else {
-      console.error('Telegram.Login not available');
       onErrorRef.current?.('Telegram Login SDK not loaded');
     }
   }, [clientId, handleResult]);
@@ -114,7 +117,7 @@ export function TelegramLoginWidget({
       onClick={handleClick}
       disabled={!isReady}
       style={{
-        background: isReady 
+        background: isReady
           ? 'linear-gradient(135deg, #2AABEE 0%, #229ED9 100%)'
           : '#ccc',
         color: 'white',

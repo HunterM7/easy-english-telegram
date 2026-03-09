@@ -25,7 +25,10 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { createHash, createHmac } from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
+import { createRemoteJWKSet, jwtVerify } from 'jose';
 import { TelegramWidgetDto } from './dto';
+
+const TELEGRAM_JWKS_URL = 'https://oauth.telegram.org/.well-known/jwks.json';
 
 /**
  * Данные пользователя из Telegram initData.
@@ -178,6 +181,80 @@ export class AuthService {
         photoUrl: user.photoUrl,
       },
     };
+  }
+
+  /**
+   * Вход через Telegram OIDC (новый Login Widget).
+   * Валидирует id_token (JWT) через JWKS Telegram.
+   */
+  async loginWithOidc(idToken: string): Promise<AuthResponse> {
+    const payload = await this.validateOidcToken(idToken);
+
+    const telegramId = String(payload.id ?? payload.sub);
+    const [firstName, ...lastNameParts] = (payload.name || '').split(' ');
+    const lastName = lastNameParts.join(' ') || null;
+
+    const user = await this.prisma.user.upsert({
+      where: { telegramId },
+      update: {
+        firstName: firstName || null,
+        lastName: lastName || null,
+        username: payload.preferred_username || null,
+        photoUrl: payload.picture || null,
+      },
+      create: {
+        telegramId,
+        firstName: firstName || null,
+        lastName: lastName || null,
+        username: payload.preferred_username || null,
+        photoUrl: payload.picture || null,
+      },
+    });
+
+    const tokens = await this.generateTokens(user.id);
+
+    return {
+      ...tokens,
+      user: {
+        id: user.id,
+        telegramId: user.telegramId,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        photoUrl: user.photoUrl,
+      },
+    };
+  }
+
+  /**
+   * Валидация id_token от Telegram OIDC.
+   */
+  private async validateOidcToken(idToken: string): Promise<{
+    id?: number;
+    sub?: string;
+    name?: string;
+    preferred_username?: string;
+    picture?: string;
+  }> {
+    const botId = this.configService.get<string>('TELEGRAM_BOT_TOKEN')?.split(':')[0];
+
+    try {
+      const JWKS = createRemoteJWKSet(new URL(TELEGRAM_JWKS_URL));
+      const { payload } = await jwtVerify(idToken, JWKS, {
+        issuer: 'https://oauth.telegram.org',
+        audience: botId,
+      });
+
+      return payload as {
+        id?: number;
+        sub?: string;
+        name?: string;
+        preferred_username?: string;
+        picture?: string;
+      };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid id_token');
+    }
   }
 
   /**

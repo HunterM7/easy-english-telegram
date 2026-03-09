@@ -12,7 +12,7 @@
 
 import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthService, AuthResponse, AuthTokens } from './auth.service';
-import { LoginDto, RefreshDto, LogoutDto, TelegramWidgetDto } from './dto';
+import { LoginDto, RefreshDto, LogoutDto, TelegramWidgetDto, TelegramOidcDto } from './dto';
 
 @Controller('auth')
 export class AuthController {
@@ -51,11 +51,21 @@ export class AuthController {
 
   /**
    * POST /v1/auth/telegram-widget
-   * Вход через Telegram Login Widget (для браузерной версии).
+   * Вход через Telegram Login Widget (legacy, для браузерной версии).
    */
   @Post('telegram-widget')
   @HttpCode(HttpStatus.OK)
   async loginWithWidget(@Body() dto: TelegramWidgetDto): Promise<AuthResponse> {
     return this.authService.loginWithWidget(dto);
+  }
+
+  /**
+   * POST /v1/auth/telegram-oidc
+   * Вход через новый Telegram Login (OIDC, id_token).
+   */
+  @Post('telegram-oidc')
+  @HttpCode(HttpStatus.OK)
+  async loginWithOidc(@Body() dto: TelegramOidcDto): Promise<AuthResponse> {
+    return this.authService.loginWithOidc(dto.idToken);
   }
 }
