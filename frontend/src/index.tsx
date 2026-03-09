@@ -13,7 +13,10 @@ import { LessonPage } from '#src/pages/lesson-page/lesson-page';
 import { LandingPage } from '#src/pages/landing-page/landing-page';
 import './index.scss';
 
-if (!isTMA()) {
+const IS_DEV = import.meta.env.DEV;
+const USE_MOCK = IS_DEV && import.meta.env.VITE_USE_REAL_AUTH !== 'true';
+
+if (USE_MOCK && !isTMA()) {
   mockTelegramData();
 }
 

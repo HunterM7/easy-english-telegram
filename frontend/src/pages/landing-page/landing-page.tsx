@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { isTMA } from '@telegram-apps/sdk-react';
 import { useAuth } from '#src/hooks/useAuth';
 import { TelegramLoginWidget } from '#src/components/TelegramLoginWidget';
 import type { TelegramWidgetData } from '#src/services/auth';
@@ -11,18 +10,8 @@ const IS_DEV = import.meta.env.DEV;
 const USE_MOCK_AUTH = IS_DEV && import.meta.env.VITE_USE_REAL_AUTH !== 'true';
 
 export function LandingPage() {
-  const { login, loginWithWidget } = useAuth();
+  const { loginWithWidget } = useAuth();
   const navigate = useNavigate();
-  const isTelegramApp = isTMA();
-
-  const handleTelegramLogin = async () => {
-    try {
-      await login();
-      navigate('/', { replace: true });
-    } catch (error) {
-      console.error('Login error:', error);
-    }
-  };
 
   const handleWidgetAuth = useCallback(
     async (data: TelegramWidgetData) => {
@@ -61,15 +50,6 @@ export function LandingPage() {
         </button>
       );
     }
-    // В Telegram Mini App используем initData
-    if (isTelegramApp) {
-      return (
-        <button className="landing-header__login" onClick={handleTelegramLogin}>
-          Войти через Telegram
-        </button>
-      );
-    }
-    // В браузере на проде используем виджет
     if (BOT_NAME) {
       return <TelegramLoginWidget botName={BOT_NAME} onAuth={handleWidgetAuth} buttonSize="medium" />;
     }
@@ -81,13 +61,6 @@ export function LandingPage() {
       return (
         <button className="landing-hero__cta" onClick={handleDevLogin}>
           Dev: Начать обучение
-        </button>
-      );
-    }
-    if (isTelegramApp) {
-      return (
-        <button className="landing-hero__cta" onClick={handleTelegramLogin}>
-          Начать обучение
         </button>
       );
     }
@@ -106,13 +79,6 @@ export function LandingPage() {
       return (
         <button className="landing-cta__button" onClick={handleDevLogin}>
           Dev: Войти через Telegram
-        </button>
-      );
-    }
-    if (isTelegramApp) {
-      return (
-        <button className="landing-cta__button" onClick={handleTelegramLogin}>
-          Войти через Telegram
         </button>
       );
     }
