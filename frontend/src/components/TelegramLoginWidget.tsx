@@ -1,90 +1,73 @@
 /**
- * @fileoverview Компонент Telegram Login по официальной документации.
+ * @fileoverview Legacy Telegram Login Widget.
  *
- * Скрипт загружается в index.html. Используем Telegram.Login.init() и
- * кнопку с классом tg-auth-button — всё по документации:
- * https://core.telegram.org/bots/telegram-login
+ * Использует старый виджет (telegram.org) — без oauth.telegram.org,
+ * без ошибки "origin required". Домен привязывается через /setdomain в BotFather.
+ *
+ * @see https://core.telegram.org/widgets/login
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import type { TelegramWidgetData } from '#src/services/auth';
 
 interface TelegramLoginWidgetProps {
-  clientId: string;
-  onAuth: (idToken: string) => void;
+  /** Имя бота без @ (например: EasyEnglishBot) */
+  botName: string;
+  onAuth: (data: TelegramWidgetData) => void;
   onError?: (error: string) => void;
   buttonSize?: 'large' | 'medium' | 'small';
 }
 
-// Общий колбэк — все экземпляры виджета используют один init
-let sharedCallback: ((result: { id_token?: string; error?: string }) => void) | null = null;
-
-function waitForTelegramLogin(): Promise<{ init: (opts: object, cb: (r: unknown) => void) => void }> {
-  const Telegram = (window as unknown as { Telegram?: { Login?: { init: (opts: object, cb: (r: unknown) => void) => void } } }).Telegram;
-  if (Telegram?.Login) return Promise.resolve(Telegram.Login);
-  return new Promise((resolve) => {
-    const check = () => {
-      const T = (window as unknown as { Telegram?: { Login?: { init: (opts: object, cb: (r: unknown) => void) => void } } }).Telegram;
-      if (T?.Login) {
-        resolve(T.Login);
-        return;
-      }
-      setTimeout(check, 100);
-    };
-    check();
-  });
-}
+const SCRIPT_ID = 'telegram-login-widget';
+const SCRIPT_URL = 'https://telegram.org/js/telegram-widget.js?22';
 
 export function TelegramLoginWidget({
-  clientId,
+  botName,
   onAuth,
   onError,
-  buttonSize: _buttonSize = 'large',
+  buttonSize = 'large',
 }: TelegramLoginWidgetProps) {
-  const [isReady, setIsReady] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const onAuthRef = useRef(onAuth);
   const onErrorRef = useRef(onError);
   onAuthRef.current = onAuth;
   onErrorRef.current = onError;
 
   useEffect(() => {
-    sharedCallback = (result) => {
-      if (result.error) {
-        onErrorRef.current?.(result.error);
-      } else if (result.id_token) {
-        onAuthRef.current(result.id_token);
+    if (!botName?.trim()) {
+      onErrorRef.current?.('Bot name not configured');
+      return;
+    }
+
+    const callbackName = `__tgLogin_${Date.now()}`;
+    (window as unknown as Record<string, (user: TelegramWidgetData) => void>)[callbackName] = (user: TelegramWidgetData) => {
+      if (!user?.id || !user?.hash) {
+        onErrorRef.current?.('Invalid widget data');
+        return;
       }
+      onAuthRef.current(user);
     };
 
-    const numericClientId = Number(clientId);
-    if (!numericClientId || isNaN(numericClientId)) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    waitForTelegramLogin().then((tgLogin) => {
-      setIsReady(true);
-      tgLogin.init(
-        {
-          client_id: numericClientId,
-          request_access: ['write'],
-          lang: 'ru',
-        },
-        (result: unknown) => {
-          sharedCallback?.(result as { id_token?: string; error?: string });
-        }
-      );
-    });
+    container.innerHTML = '';
+    const script = document.createElement('script');
+    script.id = SCRIPT_ID;
+    script.src = SCRIPT_URL;
+    script.async = true;
+    script.setAttribute('data-telegram-login', botName.trim());
+    script.setAttribute('data-size', buttonSize);
+    script.setAttribute('data-onauth', `${callbackName}(user)`);
+    script.setAttribute('data-request-access', 'write');
+    container.appendChild(script);
 
     return () => {
-      sharedCallback = null;
+      delete (window as unknown as Record<string, unknown>)[callbackName];
+      const existing = document.getElementById(SCRIPT_ID);
+      if (existing) existing.remove();
     };
-  }, [clientId]);
+  }, [botName, buttonSize]);
 
-  // Официальная кнопка tg-auth-button — скрипт сам обрабатывает клик и стили
-  return (
-    <button
-      type="button"
-      className="tg-auth-button"
-      disabled={!clientId || !isReady}
-    >
-      {isReady ? 'Войти через Telegram' : 'Загрузка...'}
-    </button>
-  );
+  return <div ref={containerRef} className="telegram-login-widget" />;
 }

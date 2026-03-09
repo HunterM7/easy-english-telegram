@@ -4,24 +4,24 @@ import { useAuth } from '#src/hooks/useAuth';
 import { TelegramLoginWidget } from '#src/components/TelegramLoginWidget';
 import './landing-page.scss';
 
-const CLIENT_ID = import.meta.env.VITE_TELEGRAM_CLIENT_ID || '';
+const BOT_NAME = import.meta.env.VITE_TELEGRAM_BOT_NAME || '';
 const IS_DEV = import.meta.env.DEV;
 const USE_MOCK_AUTH = IS_DEV && import.meta.env.VITE_USE_REAL_AUTH !== 'true';
 
 export function LandingPage() {
-  const { loginWithIdToken } = useAuth();
+  const { loginWithWidget } = useAuth();
   const navigate = useNavigate();
 
   const handleAuth = useCallback(
-    async (idToken: string) => {
+    async (data: { id: number; first_name?: string; last_name?: string; username?: string; photo_url?: string; auth_date: number; hash: string }) => {
       try {
-        await loginWithIdToken(idToken);
+        await loginWithWidget(data);
         navigate('/', { replace: true });
       } catch (error) {
         console.error('Login error:', error);
       }
     },
-    [loginWithIdToken, navigate],
+    [loginWithWidget, navigate],
   );
 
   const handleError = useCallback((error: string) => {
@@ -40,8 +40,8 @@ export function LandingPage() {
         </button>
       );
     }
-    if (CLIENT_ID) {
-      return <TelegramLoginWidget clientId={CLIENT_ID} onAuth={handleAuth} onError={handleError} buttonSize="medium" />;
+    if (BOT_NAME) {
+      return <TelegramLoginWidget botName={BOT_NAME} onAuth={handleAuth} onError={handleError} buttonSize="medium" />;
     }
     return null;
   };
@@ -54,10 +54,10 @@ export function LandingPage() {
         </button>
       );
     }
-    if (CLIENT_ID) {
+    if (BOT_NAME) {
       return (
         <div className="landing-hero__widget">
-          <TelegramLoginWidget clientId={CLIENT_ID} onAuth={handleAuth} onError={handleError} buttonSize="large" />
+          <TelegramLoginWidget botName={BOT_NAME} onAuth={handleAuth} onError={handleError} buttonSize="large" />
         </div>
       );
     }
@@ -72,8 +72,8 @@ export function LandingPage() {
         </button>
       );
     }
-    if (CLIENT_ID) {
-      return <TelegramLoginWidget clientId={CLIENT_ID} onAuth={handleAuth} onError={handleError} buttonSize="large" />;
+    if (BOT_NAME) {
+      return <TelegramLoginWidget botName={BOT_NAME} onAuth={handleAuth} onError={handleError} buttonSize="large" />;
     }
     return null;
   };
