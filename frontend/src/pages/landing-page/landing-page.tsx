@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '#src/hooks/useAuth';
 import { TelegramLoginWidget } from '#src/components/TelegramLoginWidget';
-import type { TelegramAuthUser } from '#src/types/telegram-login';
+import type { TelegramWidgetData } from '#src/services/auth';
 import './landing-page.scss';
 
 const CLIENT_ID = import.meta.env.VITE_TELEGRAM_CLIENT_ID || '';
@@ -10,20 +10,20 @@ const IS_DEV = import.meta.env.DEV;
 const USE_MOCK_AUTH = IS_DEV && import.meta.env.VITE_USE_REAL_AUTH !== 'true';
 
 export function LandingPage() {
-  const { loginWithIdToken } = useAuth();
+  const { loginWithWidget } = useAuth();
   const navigate = useNavigate();
 
   const handleAuth = useCallback(
-    async (user: TelegramAuthUser, idToken: string) => {
+    async (data: TelegramWidgetData) => {
       try {
-        console.log('Auth success:', user);
-        await loginWithIdToken(idToken);
+        console.log('Auth success:', data);
+        await loginWithWidget(data);
         navigate('/', { replace: true });
       } catch (error) {
         console.error('Login error:', error);
       }
     },
-    [loginWithIdToken, navigate],
+    [loginWithWidget, navigate],
   );
 
   const handleError = useCallback((error: string) => {

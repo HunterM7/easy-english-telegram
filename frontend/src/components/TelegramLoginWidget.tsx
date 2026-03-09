@@ -8,11 +8,12 @@
  */
 
 import { useEffect, useRef, useCallback, useState } from 'react';
-import type { TelegramAuthUser, TelegramAuthResult } from '#src/types/telegram-login';
+import type { TelegramWidgetData } from '#src/services/auth';
 
 interface TelegramLoginWidgetProps {
   clientId: string;
-  onAuth: (user: TelegramAuthUser, idToken: string) => void;
+  /** Колбэк с данными от виджета (старый формат: id, first_name, hash, auth_date...) */
+  onAuth: (data: TelegramWidgetData) => void;
   onError?: (error: string) => void;
   buttonSize?: 'large' | 'medium' | 'small';
 }
@@ -34,15 +35,15 @@ export function TelegramLoginWidget({
     onErrorRef.current = onError;
   }, [onAuth, onError]);
 
-  const handleResult = useCallback((result: TelegramAuthResult) => {
+  const handleResult = useCallback((result: unknown) => {
     console.log('Telegram auth result:', result);
-    if (result.error) {
-      console.error('Telegram auth error:', result.error);
-      onErrorRef.current?.(result.error);
+    if (result === false || result === null || result === undefined) {
+      onErrorRef.current?.('Авторизация не завершена');
       return;
     }
-    if (result.user && result.id_token) {
-      onAuthRef.current(result.user, result.id_token);
+    const data = result as Record<string, unknown>;
+    if (data.id && data.hash && data.auth_date) {
+      onAuthRef.current(data as unknown as TelegramWidgetData);
     }
   }, []);
 
