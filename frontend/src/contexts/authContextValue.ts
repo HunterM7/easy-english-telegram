@@ -19,8 +19,10 @@ export interface AuthContextType {
   isLoading: boolean;
   /** Вход через Telegram Mini App (использует initData) */
   login: () => Promise<void>;
-  /** Вход через Telegram Login Widget (браузерная версия) */
+  /** Вход через Telegram Login Widget (браузерная версия, legacy) */
   loginWithWidget: (data: TelegramWidgetData) => Promise<void>;
+  /** Вход через новый Telegram Login (OIDC) */
+  loginWithIdToken: (idToken: string) => Promise<void>;
   /** Выход из аккаунта */
   logout: () => Promise<void>;
 }

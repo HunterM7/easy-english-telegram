@@ -66,7 +66,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   /**
-   * Вход через Telegram Login Widget.
+   * Вход через Telegram Login Widget (legacy).
    * Используется в браузерной версии приложения.
    * @param data - Данные от Telegram Login Widget (id, first_name, hash и т.д.)
    */
@@ -76,6 +76,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(response.user);
     } catch (error) {
       console.error('Widget login failed:', error);
+      throw error;
+    }
+  }, []);
+
+  /**
+   * Вход через новый Telegram Login (OIDC).
+   * @param idToken - JWT токен от Telegram OIDC
+   */
+  const loginWithIdToken = useCallback(async (idToken: string) => {
+    try {
+      const response = await authService.loginWithIdToken(idToken);
+      setUser(response.user);
+    } catch (error) {
+      console.error('OIDC login failed:', error);
       throw error;
     }
   }, []);
@@ -138,6 +152,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isLoading,
     login,
     loginWithWidget,
+    loginWithIdToken,
     logout,
   };
 

@@ -98,7 +98,7 @@ class AuthService {
   }
 
   /**
-   * Вход через Telegram Login Widget.
+   * Вход через Telegram Login Widget (legacy).
    * Отправляет данные виджета на сервер для валидации.
    *
    * @param data - Данные от Telegram Login Widget
@@ -109,6 +109,27 @@ class AuthService {
     const response = await apiClient.post<LoginResponse>(
       'auth/telegram-widget',
       data,
+    );
+
+    this.saveTokens(response.accessToken, response.refreshToken);
+    this.saveUser(response.user);
+    apiClient.setAccessToken(response.accessToken);
+
+    return response;
+  }
+
+  /**
+   * Вход через новый Telegram Login (OIDC).
+   * Отправляет id_token на сервер для валидации.
+   *
+   * @param idToken - JWT токен от Telegram OIDC
+   * @returns Токены и данные пользователя
+   * @throws При ошибке валидации или сетевой ошибке
+   */
+  async loginWithIdToken(idToken: string): Promise<LoginResponse> {
+    const response = await apiClient.post<LoginResponse>(
+      'auth/telegram-oidc',
+      { idToken },
     );
 
     this.saveTokens(response.accessToken, response.refreshToken);

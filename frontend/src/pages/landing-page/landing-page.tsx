@@ -2,44 +2,43 @@ import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '#src/hooks/useAuth';
 import { TelegramLoginWidget } from '#src/components/TelegramLoginWidget';
-import type { TelegramWidgetData } from '#src/services/auth';
 import './landing-page.scss';
 
-const BOT_NAME = import.meta.env.VITE_TELEGRAM_BOT_NAME || '';
+const CLIENT_ID = import.meta.env.VITE_TELEGRAM_CLIENT_ID || '';
 const IS_DEV = import.meta.env.DEV;
 const USE_MOCK_AUTH = IS_DEV && import.meta.env.VITE_USE_REAL_AUTH !== 'true';
 
+interface TelegramUser {
+  id: number;
+  first_name?: string;
+  last_name?: string;
+  username?: string;
+  photo_url?: string;
+}
+
 export function LandingPage() {
-  const { loginWithWidget } = useAuth();
+  const { loginWithIdToken } = useAuth();
   const navigate = useNavigate();
 
-  const handleWidgetAuth = useCallback(
-    async (data: TelegramWidgetData) => {
+  const handleAuth = useCallback(
+    async (user: TelegramUser, idToken: string) => {
       try {
-        await loginWithWidget(data);
+        console.log('Auth success:', user);
+        await loginWithIdToken(idToken);
         navigate('/', { replace: true });
       } catch (error) {
-        console.error('Widget login error:', error);
+        console.error('Login error:', error);
       }
     },
-    [loginWithWidget, navigate],
+    [loginWithIdToken, navigate],
   );
 
+  const handleError = useCallback((error: string) => {
+    console.error('Telegram auth error:', error);
+  }, []);
+
   const handleDevLogin = async () => {
-    const mockData: TelegramWidgetData = {
-      id: 123456789,
-      first_name: 'Dev',
-      last_name: 'User',
-      username: 'devuser',
-      auth_date: Math.floor(Date.now() / 1000),
-      hash: 'dev_mock_hash',
-    };
-    try {
-      await loginWithWidget(mockData);
-      navigate('/', { replace: true });
-    } catch (error) {
-      console.error('Dev login error:', error);
-    }
+    console.log('Dev login - not implemented for new auth');
   };
 
   const renderLoginButton = () => {
@@ -50,8 +49,8 @@ export function LandingPage() {
         </button>
       );
     }
-    if (BOT_NAME) {
-      return <TelegramLoginWidget botName={BOT_NAME} onAuth={handleWidgetAuth} buttonSize="medium" />;
+    if (CLIENT_ID) {
+      return <TelegramLoginWidget clientId={CLIENT_ID} onAuth={handleAuth} onError={handleError} buttonSize="medium" />;
     }
     return null;
   };
@@ -64,10 +63,10 @@ export function LandingPage() {
         </button>
       );
     }
-    if (BOT_NAME) {
+    if (CLIENT_ID) {
       return (
         <div className="landing-hero__widget">
-          <TelegramLoginWidget botName={BOT_NAME} onAuth={handleWidgetAuth} buttonSize="large" />
+          <TelegramLoginWidget clientId={CLIENT_ID} onAuth={handleAuth} onError={handleError} buttonSize="large" />
         </div>
       );
     }
@@ -82,8 +81,8 @@ export function LandingPage() {
         </button>
       );
     }
-    if (BOT_NAME) {
-      return <TelegramLoginWidget botName={BOT_NAME} onAuth={handleWidgetAuth} buttonSize="large" />;
+    if (CLIENT_ID) {
+      return <TelegramLoginWidget clientId={CLIENT_ID} onAuth={handleAuth} onError={handleError} buttonSize="large" />;
     }
     return null;
   };
