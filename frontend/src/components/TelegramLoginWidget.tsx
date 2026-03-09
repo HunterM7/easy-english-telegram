@@ -11,7 +11,7 @@
  * @see https://core.telegram.org/widgets/login
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useId } from 'react';
 import type { TelegramWidgetData } from '#src/services/auth';
 
 interface TelegramLoginWidgetProps {
@@ -29,12 +29,6 @@ interface TelegramLoginWidgetProps {
   usePic?: boolean;
   /** Язык интерфейса виджета */
   lang?: string;
-}
-
-declare global {
-  interface Window {
-    TelegramLoginWidgetCallback?: (data: TelegramWidgetData) => void;
-  }
 }
 
 /**
@@ -62,10 +56,19 @@ export function TelegramLoginWidget({
   lang = 'ru',
 }: TelegramLoginWidgetProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const uniqueId = useId().replace(/:/g, '_');
+  const callbackNameRef = useRef<string>(`TelegramLoginWidget_${uniqueId}`);
+  const onAuthRef = useRef(onAuth);
 
   useEffect(() => {
-    const callbackName = 'TelegramLoginWidgetCallback';
-    window[callbackName] = onAuth;
+    onAuthRef.current = onAuth;
+  }, [onAuth]);
+
+  useEffect(() => {
+    const callbackName = callbackNameRef.current;
+    (window as unknown as Record<string, unknown>)[callbackName] = (data: TelegramWidgetData) => {
+      onAuthRef.current(data);
+    };
 
     const script = document.createElement('script');
     script.src = 'https://telegram.org/js/telegram-widget.js?22';
@@ -87,9 +90,9 @@ export function TelegramLoginWidget({
     }
 
     return () => {
-      delete window[callbackName];
+      delete (window as unknown as Record<string, unknown>)[callbackName];
     };
-  }, [botName, onAuth, buttonSize, cornerRadius, requestAccess, usePic, lang]);
+  }, [botName, buttonSize, cornerRadius, requestAccess, usePic, lang]);
 
   return <div ref={containerRef} />;
 }
