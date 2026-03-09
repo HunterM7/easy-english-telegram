@@ -11,8 +11,10 @@
  * @see https://core.telegram.org/widgets/login
  */
 
-import { useEffect, useRef, useId } from 'react';
+import { useEffect, useRef } from 'react';
 import type { TelegramWidgetData } from '#src/services/auth';
+
+let widgetCounter = 0;
 
 interface TelegramLoginWidgetProps {
   /** Имя бота (без @), например 'EasyEnglishBot' */
@@ -56,8 +58,7 @@ export function TelegramLoginWidget({
   lang = 'ru',
 }: TelegramLoginWidgetProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const uniqueId = useId().replace(/:/g, '_');
-  const callbackNameRef = useRef<string>(`TelegramLoginWidget_${uniqueId}`);
+  const callbackNameRef = useRef<string>(`TelegramLoginWidget_${++widgetCounter}`);
   const onAuthRef = useRef(onAuth);
 
   useEffect(() => {
