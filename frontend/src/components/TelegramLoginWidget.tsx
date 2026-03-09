@@ -39,9 +39,9 @@ declare global {
   interface Window {
     Telegram?: {
       Login: {
-        init: (options: { client_id: string; request_access?: string[]; lang?: string }, callback: (result: TelegramAuthResult) => void) => void;
+        init: (options: { client_id: number; request_access?: string[]; lang?: string }, callback: (result: TelegramAuthResult) => void) => void;
         open: (callback?: (result: TelegramAuthResult) => void) => void;
-        auth: (options: { client_id: string; request_access?: string[]; lang?: string }, callback: (result: TelegramAuthResult) => void) => void;
+        auth: (options: { client_id: number; request_access?: string[]; lang?: string }, callback: (result: TelegramAuthResult) => void) => void;
       };
     };
   }
@@ -85,7 +85,7 @@ export function TelegramLoginWidget({
       if (window.Telegram?.Login) {
         window.Telegram.Login.init(
           {
-            client_id: clientId,
+            client_id: Number(clientId),
             request_access: ['write'],
             lang: 'ru',
           },
