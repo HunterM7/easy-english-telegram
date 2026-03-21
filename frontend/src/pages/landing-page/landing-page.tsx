@@ -43,7 +43,8 @@ export function LandingPage() {
       );
     }
     if (BOT_NAME) {
-      return <button onClick={onTelegramAuth}>Войти через Telegram</button>;
+      return <button className="tg-auth-button">Sign In with Telegram</button>
+      // return <button onClick={onTelegramAuth}>Войти через Telegram</button>;
       // return <TelegramLoginWidget botName={BOT_NAME} onAuth={handleAuth} onError={handleError} buttonSize="medium" />;
     }
     return null;
