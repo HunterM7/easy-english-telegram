@@ -4,7 +4,6 @@ import { useAuth } from '#src/hooks/useAuth';
 import { TelegramLoginWidget } from '#src/components/TelegramLoginWidget';
 import type { TelegramWidgetData } from '#src/services/auth';
 import './landing-page.scss';
-import { onTelegramAuth } from '#src/utils/telegram';
 
 const BOT_NAME = import.meta.env.VITE_TELEGRAM_BOT_NAME || '';
 const IS_DEV = import.meta.env.DEV;
