@@ -4,6 +4,7 @@ import { useAuth } from '#src/hooks/useAuth';
 import { TelegramLoginWidget } from '#src/components/TelegramLoginWidget';
 import type { TelegramWidgetData } from '#src/services/auth';
 import './landing-page.scss';
+import { onTelegramAuth } from '#src/utils/telegram';
 
 const BOT_NAME = import.meta.env.VITE_TELEGRAM_BOT_NAME || '';
 const IS_DEV = import.meta.env.DEV;
@@ -42,7 +43,8 @@ export function LandingPage() {
       );
     }
     if (BOT_NAME) {
-      return <TelegramLoginWidget botName={BOT_NAME} onAuth={handleAuth} onError={handleError} buttonSize="medium" />;
+      return <button onClick={onTelegramAuth}>Войти через Telegram</button>;
+      // return <TelegramLoginWidget botName={BOT_NAME} onAuth={handleAuth} onError={handleError} buttonSize="medium" />;
     }
     return null;
   };
