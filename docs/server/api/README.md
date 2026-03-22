@@ -31,7 +31,7 @@
 
 | Файл | Раздел | Эндпоинты |
 |------|--------|-----------|
-| [auth.md](auth.md) | Авторизация | `POST /v1/auth/login`, `POST /v1/auth/logout`, `POST /v1/auth/refresh` |
+| [auth.md](auth.md) | Авторизация | `POST /v1/auth/login`, `POST /v1/auth/refresh` |
 | [themes.md](themes.md) | Темы | `GET /v1/themes` |
 | [trainer.md](trainer.md) | Тренажёр | `GET /v1/lessons/:lessonId/tasks/next`, `POST /v1/lessons/:lessonId/tasks/:taskId/answer` |
 | [other.md](other.md) | Прочие (планируются) | Содержимое темы, профиль, настройки — уточнить при реализации |
@@ -40,6 +40,6 @@
 
 ## Общие правила
 
-- **Защищённые роуты:** все эндпоинты кроме `POST /v1/auth/login`, `POST /v1/auth/logout` и `POST /v1/auth/refresh` требуют заголовка `Authorization: Bearer <accessToken>`. Подробно — в [auth.md](auth.md).
-- **При 401:** клиент вызывает `POST /v1/auth/refresh` с сохранённым refresh токеном; при успехе — сохранить новые токены и повторить запрос; при 401 от refresh — очистить токены и перенаправить на посадочную (вход через Telegram).
+- **Защищённые роуты:** все эндпоинты кроме `POST /v1/auth/login` и `POST /v1/auth/refresh` требуют заголовка `Authorization: Bearer <accessToken>`. Подробно — в [auth.md](auth.md).
+- **При 401:** клиент вызывает `POST /v1/auth/refresh` с сохранённым **`refreshToken`**; при успехе — сохранить новые **`accessToken`** и **`refreshToken`** и повторить запрос; при 401 от **`refreshToken`** — очистить **`accessToken`** и **`refreshToken`**. **Mini App:** экран с переходом к боту. **Будущая браузерная авторизация:** редирект на посадочную — см. [auth.md](auth.md).
 - **Валидация:** на бэкенде проверять тип и наличие обязательных полей; при ошибке возвращать 400 с полем `message` (и при необходимости `errors` со списком полей).
