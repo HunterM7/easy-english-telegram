@@ -15,33 +15,33 @@ export class TelegramWidgetDto {
   @Type(() => Number)
   @IsNumber()
   @IsNotEmpty()
-  id: number;
+    id: number;
 
   /** Имя пользователя в Telegram */
   @IsString()
   @IsOptional()
-  first_name?: string;
+    first_name?: string;
 
   /** Фамилия пользователя в Telegram */
   @IsString()
   @IsOptional()
-  last_name?: string;
+    last_name?: string;
 
   /** Username в Telegram (без @) */
   @IsString()
   @IsOptional()
-  username?: string;
+    username?: string;
 
   /** URL аватара пользователя */
   @IsString()
   @IsOptional()
-  photo_url?: string;
+    photo_url?: string;
 
   /** Unix timestamp момента авторизации */
   @Type(() => Number)
   @IsNumber()
   @IsNotEmpty()
-  auth_date: number;
+    auth_date: number;
 
   /**
    * HMAC-SHA256 подпись для валидации данных.
@@ -49,5 +49,5 @@ export class TelegramWidgetDto {
    */
   @IsString()
   @IsNotEmpty()
-  hash: string;
+    hash: string;
 }

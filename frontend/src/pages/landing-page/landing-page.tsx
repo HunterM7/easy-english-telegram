@@ -30,7 +30,7 @@ export function LandingPage() {
   // }, []);
 
   const handleDevLogin = async () => {
-    console.log('Dev login - not implemented for new auth');
+    console.warn('Dev login - not implemented for new auth');
   };
 
   const renderLoginButton = () => {

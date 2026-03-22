@@ -19,7 +19,7 @@ export const lessonMockData: LessonMockData = {
       id: 'random-task-id',
       name: 'Я люблю гулять',
       answer: 'I love to walk',
-      options: [ 'I', 'he',  'we', 'like', 'climbing', 'walking', 'working', 'watching', 'bathing' ],
+      options: [ 'I', 'he', 'we', 'like', 'climbing', 'walking', 'working', 'watching', 'bathing' ],
     },
   ],
 }

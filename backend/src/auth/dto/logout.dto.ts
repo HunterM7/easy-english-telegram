@@ -12,5 +12,5 @@ export class LogoutDto {
   /** UUID refresh token для инвалидации */
   @IsString()
   @IsNotEmpty()
-  refreshToken: string;
+    refreshToken: string;
 }

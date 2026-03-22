@@ -16,5 +16,5 @@ export class LoginDto {
    */
   @IsString()
   @IsNotEmpty()
-  initData: string;
+    initData: string;
 }

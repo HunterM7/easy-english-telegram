@@ -70,7 +70,7 @@ export function TelegramLoginWidget({
       const existing = document.getElementById(SCRIPT_ID);
       if (existing) existing.remove();
     };
-  }, [botName, buttonSize]);
+  }, [ botName, buttonSize ]);
 
   return <div ref={containerRef} className="telegram-login-widget" />;
 }

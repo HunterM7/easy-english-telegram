@@ -38,8 +38,8 @@ interface AuthProviderProps {
  * ```
  */
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [ user, setUser ] = useState<User | null>(null);
+  const [ isLoading, setIsLoading ] = useState(true);
   /** Защита от двойного вызова в React StrictMode */
   const initCalledRef = useRef(false);
 

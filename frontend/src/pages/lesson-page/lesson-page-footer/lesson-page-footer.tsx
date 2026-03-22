@@ -11,18 +11,18 @@ export function LessonPageFooter(props: Props) {
 
   return (
     <div className='lesson-page-footer'>
-        <div className="lesson-page-footer__button">
-            <img src={helpOutlinedIcon} alt='Подсказка' />
+      <div className="lesson-page-footer__button">
+        <img src={helpOutlinedIcon} alt='Подсказка' />
+      </div>
+      <div className="lesson-page-footer__progress">
+        <div className="lesson-page-footer__progress-bar">
+          <div className="lesson-page-footer__progress-bar-completed" style={{ width: `${progress}%` }}/>
         </div>
-        <div className="lesson-page-footer__progress">
-            <div className="lesson-page-footer__progress-bar">
-                <div className="lesson-page-footer__progress-bar-completed" style={{ width: `${progress}%` }}/>
-            </div>
-            <div className="lesson-page-footer__progress-text">{progress}% завершено</div>
-        </div>
-        <div className="lesson-page-footer__button">
-            <img src={settingsIcon} alt='Настройки' />
-        </div>
+        <div className="lesson-page-footer__progress-text">{progress}% завершено</div>
+      </div>
+      <div className="lesson-page-footer__button">
+        <img src={settingsIcon} alt='Настройки' />
+      </div>
     </div>
   )
 }

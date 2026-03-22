@@ -191,7 +191,7 @@ export class AuthService {
     const payload = await this.validateOidcToken(idToken);
 
     const telegramId = String(payload.id ?? payload.sub);
-    const [firstName, ...lastNameParts] = (payload.name || '').split(' ');
+    const [ firstName, ...lastNameParts ] = (payload.name || '').split(' ');
     const lastName = lastNameParts.join(' ') || null;
 
     const user = await this.prisma.user.upsert({
@@ -252,7 +252,7 @@ export class AuthService {
         preferred_username?: string;
         picture?: string;
       };
-    } catch (error) {
+    } catch {
       throw new UnauthorizedException('Invalid id_token');
     }
   }
@@ -346,8 +346,8 @@ export class AuthService {
 
     params.delete('hash');
     const dataCheckString = Array.from(params.entries())
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([key, value]) => `${key}=${value}`)
+      .sort(([ a ], [ b ]) => a.localeCompare(b))
+      .map(([ key, value ]) => `${key}=${value}`)
       .join('\n');
 
     const secretKey = createHmac('sha256', 'WebAppData')

@@ -2,6 +2,9 @@
   "name": "easy-english-telegram",
   "private": true,
   "description": "Monorepo: frontend (React + Vite), backend (NestJS), docs",
+  "devDependencies": {
+    "prettier": "^3.4.2"
+  },
   "scripts": {
     "install:all": "npm install --prefix frontend && npm install --prefix backend",
     "dev:frontend": "npm run dev --prefix frontend",
@@ -9,6 +12,8 @@
     "build:frontend": "npm run build --prefix frontend",
     "build:backend": "npm run build --prefix backend",
     "lint:frontend": "npm run lint --prefix frontend",
-    "lint:backend": "npm run lint --prefix backend"
+    "lint:backend": "npm run lint --prefix backend",
+    "format": "prettier --write \"frontend/**/*.{ts,tsx,js,jsx,json,css,scss,md,html}\" && npm run format --prefix backend",
+    "format:check": "prettier --check \"frontend/**/*.{ts,tsx,js,jsx,json,css,scss,md,html}\" && npm run lint --prefix backend"
   }
 }

@@ -32,7 +32,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
         console.error('Auto-login failed:', error);
       });
     }
-  }, [isLoading, isAuthenticated, login]);
+  }, [ isLoading, isAuthenticated, login ]);
 
   if (isLoading) {
     return (

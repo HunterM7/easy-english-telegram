@@ -8,7 +8,7 @@ import { LessonPageFooter } from './lesson-page-footer/lesson-page-footer';
 
 export function LessonPage() {
   const { id } = useParams();
-  const [result, setResult] = useState<string[]>([]);
+  const [ result, setResult ] = useState<string[]>([]);
 
   if (id === undefined) {
     return null;
@@ -23,7 +23,7 @@ export function LessonPage() {
   }
 
   const onOptionClick = (option: string) => {
-    setResult([...result, option]);
+    setResult([ ...result, option ]);
   }
 
   const { name, tasks } = lesson(id);
