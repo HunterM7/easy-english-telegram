@@ -1,0 +1,9 @@
+# Railway Config as Code: переопределяет Start Command в UI (в т.ч. устаревший dist/src/main.js).
+# В настройках сервиса задайте Root Directory = backend (корень этого приложения).
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "sh -c 'npx prisma migrate deploy && node dist/main.js'"
