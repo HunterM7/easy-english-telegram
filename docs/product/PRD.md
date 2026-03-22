@@ -478,7 +478,7 @@ Easy English — мини-приложение внутри Telegram для **ш
 
 - Репозиторий: `easy-english-telegram`
 - Документация Telegram Mini Apps: https://core.telegram.org/bots/webapps  
-- SDK: https://github.com/Telegram-Mini-Apps/telegram-mini-apps
+- SDK: https://github.com/Telegram-Mini-Apps/telegram-apps
 
 ---
 
