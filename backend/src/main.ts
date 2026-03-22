@@ -48,6 +48,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('docs', app, document, {
+    useGlobalPrefix: true,
     jsonDocumentUrl: 'docs/json',
   });
 
@@ -56,7 +57,7 @@ async function bootstrap() {
   await app.listen(port, host);
 
   new Logger('Bootstrap').log(
-    `Server running on ${host}:${port} | Swagger UI: http://${host === '0.0.0.0' ? 'localhost' : host}:${port}/docs`,
+    `Server running on ${host}:${port} | Swagger UI: http://${host === '0.0.0.0' ? 'localhost' : host}:${port}/v1/docs`,
   );
 }
 
