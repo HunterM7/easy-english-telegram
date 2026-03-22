@@ -1,4 +1,5 @@
 import eslint from '@eslint/js';
+import stylistic from '@stylistic/eslint-plugin';
 import importPlugin from 'eslint-plugin-import';
 import promisePlugin from 'eslint-plugin-promise';
 import globals from 'globals';
@@ -8,10 +9,15 @@ import tseslint from 'typescript-eslint';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-/** Стилевые правила в духе frontend/eslint.config.js (NestJS, без React, type-aware TS). */
+/**
+ * Стиль без Prettier: правила @stylistic + ESLint.
+ * - Переносы строк в цепочках `.a().b()` не навязываются (нет printWidth).
+ * - Массивы: `@stylistic/array-bracket-spacing` → `[ elem ]`.
+ * - Поля с декораторами: `@stylistic/indent` с `ignoredNodes`, чтобы не ломать выравнивание `@` и имени поля.
+ */
 export default tseslint.config(
   {
-    ignores: ['eslint.config.mjs', 'dist/**'],
+    ignores: ['eslint.config.mjs', 'dist/**', 'node_modules/**'],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
@@ -24,6 +30,7 @@ export default tseslint.config(
   },
   {
     plugins: {
+      '@stylistic': stylistic,
       promise: promisePlugin,
     },
     languageOptions: {
@@ -33,23 +40,39 @@ export default tseslint.config(
       },
       sourceType: 'commonjs',
       parserOptions: {
-        // Явный project стабильнее в монорепе, чем только projectService (IDE перестаёт терять типы из node_modules).
         project: ['./tsconfig.json'],
         tsconfigRootDir: __dirname,
       },
     },
     rules: {
-      'max-len': ['error', { code: 150, ignoreUrls: true, ignoreStrings: true }],
-      indent: ['error', 2],
-      'comma-dangle': ['error', 'always-multiline'],
-      'no-multi-spaces': ['error'],
-      'no-trailing-spaces': ['error', { skipBlankLines: false, ignoreComments: false }],
-      'comma-spacing': ['error'],
-      'no-negated-condition': ['error'],
-      'no-nested-ternary': ['error'],
-      'no-whitespace-before-property': ['error'],
-      'keyword-spacing': ['error', { before: true, after: true }],
-      'no-multiple-empty-lines': ['error', { max: 3, maxEOF: 1, maxBOF: 0 }],
+      /** `[ a, b ]` и `[ x ]`; `objectsInArrays` — без лишнего пробела перед `{` в `[{ ... }]` */
+      '@stylistic/array-bracket-spacing': [
+        'error',
+        'always',
+        { objectsInArrays: false, arraysInArrays: false },
+      ],
+      '@stylistic/arrow-parens': ['error', 'always'],
+      '@stylistic/comma-dangle': ['error', 'always-multiline'],
+      '@stylistic/comma-spacing': ['error', { before: false, after: true }],
+      /**
+       * Раньше для PropertyDefinition с декораторами использовали ignoredNodes — из‑за этого
+       * `eslint --fix` не выравнивал поля. У @stylistic/indent для полей с декораторами отдельная
+       * логика (имя свойства не сдвигается лишним уровнем относительно `@`).
+       */
+      '@stylistic/indent': ['error', 2, { SwitchCase: 1 }],
+      '@stylistic/keyword-spacing': ['error', { before: true, after: true }],
+      '@stylistic/max-len': [
+        'error',
+        { code: 150, ignoreUrls: true, ignoreStrings: true, ignoreRegExpLiterals: true },
+      ],
+      '@stylistic/no-multi-spaces': ['error'],
+      '@stylistic/no-multiple-empty-lines': ['error', { max: 3, maxEOF: 1, maxBOF: 0 }],
+      '@stylistic/no-trailing-spaces': ['error', { skipBlankLines: false, ignoreComments: false }],
+      '@stylistic/no-whitespace-before-property': ['error'],
+      '@stylistic/object-curly-spacing': ['error', 'always'],
+      '@stylistic/quotes': ['error', 'single', { avoidEscape: true }],
+      '@stylistic/semi': ['error', 'always'],
+      '@stylistic/space-infix-ops': 'error',
 
       'import/no-unresolved': 'off',
       'import/newline-after-import': ['warn', { count: 1 }],
@@ -58,12 +81,10 @@ export default tseslint.config(
       'import/no-mutable-exports': ['error'],
 
       'no-console': ['warn', { allow: ['warn', 'error'] }],
-      'array-bracket-spacing': ['error', 'always'],
-      'object-curly-spacing': ['error', 'always'],
       'no-var': ['error'],
-      'no-tabs': ['error'],
       'prefer-const': ['error', { destructuring: 'all', ignoreReadBeforeAssign: false }],
-      quotes: ['error', 'single'],
+      'no-negated-condition': ['error'],
+      'no-nested-ternary': ['error'],
 
       'max-depth': ['error', { max: 5 }],
       'max-params': ['error', { max: 5 }],

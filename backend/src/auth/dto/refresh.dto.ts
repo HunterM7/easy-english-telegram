@@ -2,18 +2,19 @@
  * @fileoverview DTO для обновления токенов.
  */
 
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
 /**
  * DTO для POST /v1/auth/refresh.
- * Обновляет access token по refresh token.
+ * Обновляет accessToken по refreshToken.
  */
 export class RefreshDto {
-  /**
-   * UUID refresh token.
-   * После использования старый токен удаляется, возвращается новая пара.
-   */
+  @ApiProperty({
+    format: 'uuid',
+    description: 'Opaque refreshToken из прошлого login/refresh',
+  })
   @IsString()
   @IsNotEmpty()
-    refreshToken: string;
+  refreshToken: string;
 }

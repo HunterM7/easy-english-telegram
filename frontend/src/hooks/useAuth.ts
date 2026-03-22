@@ -1,30 +1,15 @@
-/**
- * @fileoverview Хук для доступа к контексту авторизации.
- */
-
 import { useContext } from 'react';
 import { AuthContext, type AuthContextType } from '#src/contexts/authContextValue';
 
 /**
- * Хук для доступа к состоянию и методам авторизации.
+ * Доступ к контексту авторизации.
  *
- * @returns Контекст авторизации с user, isAuthenticated, login, logout и т.д.
- * @throws Error если используется вне AuthProvider
+ * @returns Контекст с `user`, `isAuthenticated`, `isLoading`, `login`
+ * @throws Error если хук вызван вне `AuthProvider`
  *
  * @example
  * ```tsx
- * function Profile() {
- *   const { user, logout, isAuthenticated } = useAuth();
- *
- *   if (!isAuthenticated) return <Login />;
- *
- *   return (
- *     <div>
- *       <p>Привет, {user.firstName}!</p>
- *       <button onClick={logout}>Выйти</button>
- *     </div>
- *   );
- * }
+ * const { user, isAuthenticated, isLoading, login } = useAuth();
  * ```
  */
 export function useAuth(): AuthContextType {
@@ -36,4 +21,3 @@ export function useAuth(): AuthContextType {
 
   return context;
 }
-

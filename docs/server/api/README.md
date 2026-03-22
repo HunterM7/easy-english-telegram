@@ -12,7 +12,7 @@
 
 **Базовый путь:** `/v1`
 
-Пример: авторизация — `POST /v1/auth/login`, список тем — `GET /v1/themes`.
+Пример: авторизация — `POST /v1/auth/login`, список учебных разделов — `GET /v1/topics` (сущность **Topic**).
 
 Если домен уже указывает на API (например, `api.example.com`), путь версии не дублирует «api»: полный URL — `https://api.example.com/v1/...`. На клиенте в `VITE_API_URL` задаётся хост (например, `https://api.example.com`), к путям запросов добавляется префикс `/v1`.
 
@@ -32,8 +32,8 @@
 | Файл | Раздел | Эндпоинты |
 |------|--------|-----------|
 | [auth.md](auth.md) | Авторизация | `POST /v1/auth/login`, `POST /v1/auth/refresh` |
-| [themes.md](themes.md) | Темы | `GET /v1/themes` |
-| [trainer.md](trainer.md) | Тренажёр | `GET /v1/lessons/:lessonId/tasks/next`, `POST /v1/lessons/:lessonId/tasks/:taskId/answer` |
+| [topics.md](topics.md) | Учебные разделы (в коде — Topic) | `GET /v1/topics` |
+| [trainer.md](trainer.md) | Тренажёр | `GET /v1/lessons/:lessonId/exercises/next`, `POST /v1/lessons/:lessonId/exercises/:exerciseId/answer` |
 | [other.md](other.md) | Прочие (планируются) | Содержимое темы, профиль, настройки — уточнить при реализации |
 
 ---

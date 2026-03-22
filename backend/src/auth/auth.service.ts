@@ -1,9 +1,5 @@
 /**
- * @fileoverview Сервис авторизации через Telegram.
- *
- * Поддерживает два способа авторизации:
- * 1. Telegram Mini App (initData) — для приложений внутри Telegram
- * 2. Telegram Login Widget — для браузерной версии
+ * @fileoverview Авторизация через Telegram Mini App (initData).
  *
  * Безопасность:
  * - Валидация HMAC-SHA256 подписи от Telegram
@@ -23,12 +19,8 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
-import { createHash, createHmac } from 'crypto';
+import { createHmac } from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
-import { createRemoteJWKSet, jwtVerify } from 'jose';
-import { TelegramWidgetDto } from './dto';
-
-const TELEGRAM_JWKS_URL = 'https://oauth.telegram.org/.well-known/jwks.json';
 
 /**
  * Данные пользователя из Telegram initData.
@@ -76,7 +68,7 @@ export class AuthService {
   ) {}
 
   /**
-   * Вход через Telegram. Валидирует initData, создаёт/находит пользователя, возвращает токены.
+   * Вход через Telegram Mini App. Валидирует initData, создаёт/находит пользователя, возвращает токены.
    */
   async login(initData: string): Promise<AuthResponse> {
     const telegramUser = this.validateInitData(initData);
@@ -134,177 +126,6 @@ export class AuthService {
     await this.prisma.refreshToken.delete({ where: { id: storedToken.id } });
 
     return this.generateTokens(storedToken.userId);
-  }
-
-  /**
-   * Выход из приложения. Инвалидирует refresh токен.
-   */
-  async logout(refreshToken: string): Promise<void> {
-    await this.prisma.refreshToken.deleteMany({
-      where: { token: refreshToken },
-    });
-  }
-
-  /**
-   * Вход через Telegram Login Widget (для браузерной версии).
-   */
-  async loginWithWidget(data: TelegramWidgetDto): Promise<AuthResponse> {
-    this.validateWidgetData(data);
-
-    const user = await this.prisma.user.upsert({
-      where: { telegramId: String(data.id) },
-      update: {
-        firstName: data.first_name || null,
-        lastName: data.last_name || null,
-        username: data.username || null,
-        photoUrl: data.photo_url || null,
-      },
-      create: {
-        telegramId: String(data.id),
-        firstName: data.first_name || null,
-        lastName: data.last_name || null,
-        username: data.username || null,
-        photoUrl: data.photo_url || null,
-      },
-    });
-
-    const tokens = await this.generateTokens(user.id);
-
-    return {
-      ...tokens,
-      user: {
-        id: user.id,
-        telegramId: user.telegramId,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        username: user.username,
-        photoUrl: user.photoUrl,
-      },
-    };
-  }
-
-  /**
-   * Вход через Telegram OIDC (новый Login Widget).
-   * Валидирует id_token (JWT) через JWKS Telegram.
-   */
-  async loginWithOidc(idToken: string): Promise<AuthResponse> {
-    const payload = await this.validateOidcToken(idToken);
-
-    const telegramId = String(payload.id ?? payload.sub);
-    const [ firstName, ...lastNameParts ] = (payload.name || '').split(' ');
-    const lastName = lastNameParts.join(' ') || null;
-
-    const user = await this.prisma.user.upsert({
-      where: { telegramId },
-      update: {
-        firstName: firstName || null,
-        lastName: lastName || null,
-        username: payload.preferred_username || null,
-        photoUrl: payload.picture || null,
-      },
-      create: {
-        telegramId,
-        firstName: firstName || null,
-        lastName: lastName || null,
-        username: payload.preferred_username || null,
-        photoUrl: payload.picture || null,
-      },
-    });
-
-    const tokens = await this.generateTokens(user.id);
-
-    return {
-      ...tokens,
-      user: {
-        id: user.id,
-        telegramId: user.telegramId,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        username: user.username,
-        photoUrl: user.photoUrl,
-      },
-    };
-  }
-
-  /**
-   * Валидация id_token от Telegram OIDC.
-   */
-  private async validateOidcToken(idToken: string): Promise<{
-    id?: number;
-    sub?: string;
-    name?: string;
-    preferred_username?: string;
-    picture?: string;
-  }> {
-    const botId = this.configService.get<string>('TELEGRAM_BOT_TOKEN')?.split(':')[0];
-
-    try {
-      const JWKS = createRemoteJWKSet(new URL(TELEGRAM_JWKS_URL));
-      const { payload } = await jwtVerify(idToken, JWKS, {
-        issuer: 'https://oauth.telegram.org',
-        audience: botId,
-      });
-
-      return payload as {
-        id?: number;
-        sub?: string;
-        name?: string;
-        preferred_username?: string;
-        picture?: string;
-      };
-    } catch {
-      throw new UnauthorizedException('Invalid id_token');
-    }
-  }
-
-  /**
-   * Валидация данных от Telegram Login Widget.
-   * Алгоритм отличается от initData — используется SHA256(bot_token) как секрет.
-   */
-  private validateWidgetData(data: TelegramWidgetDto): void {
-    const isProduction =
-      this.configService.get<string>('NODE_ENV') === 'production';
-
-    // В dev-режиме пропускаем проверку
-    if (!isProduction) {
-      return;
-    }
-
-    const botToken = this.configService.get<string>('TELEGRAM_BOT_TOKEN');
-    if (!botToken) {
-      throw new BadRequestException('Telegram bot token not configured');
-    }
-
-    // Проверка времени авторизации (не старше 24 часов)
-    const authTimestamp = data.auth_date * 1000;
-    const now = Date.now();
-    const maxAge = 24 * 60 * 60 * 1000;
-
-    if (now - authTimestamp > maxAge) {
-      throw new UnauthorizedException('Widget auth data expired');
-    }
-
-    // Формируем строку для проверки (все поля кроме hash, отсортированы по алфавиту)
-    const checkArr: string[] = [];
-    if (data.auth_date) checkArr.push(`auth_date=${data.auth_date}`);
-    if (data.first_name) checkArr.push(`first_name=${data.first_name}`);
-    if (data.id) checkArr.push(`id=${data.id}`);
-    if (data.last_name) checkArr.push(`last_name=${data.last_name}`);
-    if (data.photo_url) checkArr.push(`photo_url=${data.photo_url}`);
-    if (data.username) checkArr.push(`username=${data.username}`);
-
-    const dataCheckString = checkArr.sort().join('\n');
-
-    // Секретный ключ = SHA256(bot_token)
-    const secretKey = createHash('sha256').update(botToken).digest();
-
-    const calculatedHash = createHmac('sha256', secretKey)
-      .update(dataCheckString)
-      .digest('hex');
-
-    if (calculatedHash !== data.hash) {
-      throw new UnauthorizedException('Invalid widget signature');
-    }
   }
 
   /**

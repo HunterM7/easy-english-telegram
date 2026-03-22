@@ -8,8 +8,8 @@
 |-------|------|
 | Посадочная страница | [landing.md](landing.md) |
 | Главная (страница попугая) | [home.md](home.md) |
-| Список тем | [themes-list.md](themes-list.md) |
-| Содержимое темы (теория + уроки) | [theme-content.md](theme-content.md) |
+| Список тем | [topics-list.md](topics-list.md) |
+| Содержимое темы (теория + уроки) | [topic-content.md](topic-content.md) |
 | Теория темы | [theory.md](theory.md) |
 | Тренажёр (страница урока) | [trainer.md](trainer.md) |
 | Урок завершён | [lesson-completed.md](lesson-completed.md) |

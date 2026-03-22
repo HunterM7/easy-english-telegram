@@ -1,12 +1,10 @@
 /**
- * @fileoverview Провайдер авторизации для React-приложения.
+ * @fileoverview Провайдер авторизации для React-приложения (Telegram Mini App).
  *
- * Поддерживает два способа авторизации:
- * 1. Telegram Mini App — автоматическая авторизация через initData
- * 2. Браузер — авторизация через Telegram Login Widget
+ * Поддерживается вход по `initData` и восстановление сессии через `refresh` при наличии
+ * refresh token в localStorage.
  *
- * При монтировании автоматически восстанавливает сессию из localStorage,
- * если есть сохранённый refresh token.
+ * При монтировании автоматически восстанавливает сессию, если есть сохранённый refresh token.
  */
 
 import {
@@ -17,7 +15,7 @@ import {
   type ReactNode,
 } from 'react';
 import { retrieveRawInitData } from '@telegram-apps/sdk-react';
-import { authService, type TelegramWidgetData, type User } from '#src/services/auth';
+import { authService, type User } from '#src/services/auth';
 import { AuthContext, type AuthContextType } from './authContextValue';
 
 export { AuthContext, type AuthContextType };
@@ -27,8 +25,7 @@ interface AuthProviderProps {
 }
 
 /**
- * Провайдер авторизации. Оборачивает приложение и предоставляет
- * контекст авторизации всем дочерним компонентам.
+ * Провайдер авторизации. Оборачивает приложение и предоставляет контекст авторизации дочерним компонентам.
  *
  * @example
  * ```tsx
@@ -44,9 +41,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const initCalledRef = useRef(false);
 
   /**
-   * Вход через Telegram Mini App.
-   * Получает initData из Telegram SDK и отправляет на сервер.
-   * Используется только внутри Telegram клиента.
+   * Вход через Telegram Mini App: получает initData из SDK и отправляет на сервер.
+   * Используется только внутри Telegram-клиента.
    */
   const login = useCallback(async () => {
     try {
@@ -66,55 +62,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   /**
-   * Вход через Telegram Login Widget (legacy).
-   * Используется в браузерной версии приложения.
-   * @param data - Данные от Telegram Login Widget (id, first_name, hash и т.д.)
-   */
-  const loginWithWidget = useCallback(async (data: TelegramWidgetData) => {
-    try {
-      const response = await authService.loginWithWidget(data);
-      setUser(response.user);
-    } catch (error) {
-      console.error('Widget login failed:', error);
-      throw error;
-    }
-  }, []);
-
-  /**
-   * Вход через новый Telegram Login (OIDC).
-   * @param idToken - JWT токен от Telegram OIDC
-   */
-  const loginWithIdToken = useCallback(async (idToken: string) => {
-    try {
-      const response = await authService.loginWithIdToken(idToken);
-      setUser(response.user);
-    } catch (error) {
-      console.error('OIDC login failed:', error);
-      throw error;
-    }
-  }, []);
-
-  /**
-   * Выход из аккаунта.
-   * Инвалидирует refresh token на сервере и очищает локальное состояние.
-   */
-  const logout = useCallback(async () => {
-    await authService.logout();
-    setUser(null);
-  }, []);
-
-  /**
-   * Инициализация авторизации при монтировании.
-   * Проверяет наличие сохранённых токенов и восстанавливает сессию.
+   * Инициализация при монтировании: при наличии refresh token — обновление пары токенов;
+   * при успехе — восстановление `user` из localStorage.
    *
-   * Логика:
-   * 1. Проверяем наличие refresh token в localStorage
-   * 2. Если есть — обновляем токены через /auth/refresh
-   * 3. При успехе — восстанавливаем user из localStorage
-   * 4. При ошибке — очищаем сессию
-   *
-   * Используется ref для защиты от двойного вызова в React StrictMode,
-   * т.к. refresh token одноразовый и удаляется после использования.
+   * Используется ref, чтобы не вызвать `refresh` дважды в StrictMode (refresh token одноразовый).
    */
   useEffect(() => {
     if (initCalledRef.current) {
@@ -151,9 +102,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isAuthenticated: !!user,
     isLoading,
     login,
-    loginWithWidget,
-    loginWithIdToken,
-    logout,
   };
 
   return (
@@ -162,4 +110,3 @@ export function AuthProvider({ children }: AuthProviderProps) {
     </AuthContext.Provider>
   );
 }
-

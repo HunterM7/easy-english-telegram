@@ -1,34 +1,19 @@
-/**
- * @fileoverview Определение типов и контекста авторизации.
- * Вынесено в отдельный файл для совместимости с React Fast Refresh.
- */
-
 import { createContext } from 'react';
-import type { User, TelegramWidgetData } from '#src/services/auth';
+import type { User } from '#src/services/auth';
 
 /**
- * Тип контекста авторизации.
- * Предоставляет состояние и методы для управления аутентификацией.
+ * Контекст авторизации (Telegram Mini App: `initData` + обновление по refresh).
+ *
+ * Используется вместе с `AuthProvider` и хуком `useAuth`.
  */
 export interface AuthContextType {
-  /** Текущий авторизованный пользователь или null */
+  /** Текущий пользователь или null до входа / после сброса сессии */
   user: User | null;
-  /** Флаг авторизации (true если user !== null) */
   isAuthenticated: boolean;
-  /** Флаг загрузки (true во время инициализации/проверки токенов) */
+  /** Завершение начальной проверки токенов и при необходимости refresh */
   isLoading: boolean;
-  /** Вход через Telegram Mini App (использует initData) */
+  /** Вход по initData из Telegram SDK (только внутри Mini App) */
   login: () => Promise<void>;
-  /** Вход через Telegram Login Widget (браузерная версия, legacy) */
-  loginWithWidget: (data: TelegramWidgetData) => Promise<void>;
-  /** Вход через новый Telegram Login (OIDC) */
-  loginWithIdToken: (idToken: string) => Promise<void>;
-  /** Выход из аккаунта */
-  logout: () => Promise<void>;
 }
 
-/**
- * React Context для авторизации.
- * Используется в связке с AuthProvider и хуком useAuth.
- */
 export const AuthContext = createContext<AuthContextType | null>(null);

@@ -2,7 +2,7 @@
  * @fileoverview Защищённый роут — только для авторизованных пользователей.
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { isTMA } from '@telegram-apps/sdk-react';
 import { useAuth } from '#src/hooks/useAuth';
@@ -24,12 +24,14 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading, login } = useAuth();
   const location = useLocation();
   const autoLoginAttempted = useRef(false);
+  const [ tmaLoginFailed, setTmaLoginFailed ] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated && isTMA() && !autoLoginAttempted.current) {
       autoLoginAttempted.current = true;
       login().catch((error) => {
         console.error('Auto-login failed:', error);
+        setTmaLoginFailed(true);
       });
     }
   }, [ isLoading, isAuthenticated, login ]);
@@ -44,6 +46,13 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   if (!isAuthenticated) {
     if (isTMA()) {
+      if (tmaLoginFailed) {
+        return (
+          <div className="loading-screen">
+            <p>Не удалось войти. Закройте Mini App и откройте снова из бота.</p>
+          </div>
+        );
+      }
       return (
         <div className="loading-screen">
           <div className="spinner" />
